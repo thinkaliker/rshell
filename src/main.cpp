@@ -52,11 +52,12 @@ int main (int argc, char** argv)
 
 void cmd_interpreter(vector<string> input)
 {
-	unsigned size = input.size();
+//	unsigned size = input.size();
 	string cmd = input.back();
-	string file;
-	string param;
-	vector<string> strs;
+//	string file;
+//	string param;
+	int len;
+//	vector<string> strs;
 
 //	cout << "last " << input.back() << endl;
 //	for (unsigned i = 0; i < size ; i++)
@@ -64,25 +65,39 @@ void cmd_interpreter(vector<string> input)
 
 	//parse command to seperate command and parameters
 	
-	split(strs, cmd, is_any_of(" "));
-	file = strs.front();
-	for (unsigned i = 1; i < strs.size(); i++)
-	{
-		param.append(strs.at(i));
-	}
-	param.append('\0'); //null termination
+//	split(strs, cmd, is_any_of(" "));
+//	file = strs.front();
+	
+//	for (unsigned i = 1; i < strs.size(); i++)
+//	{
+//		param.append(strs.at(i));
+//	}
+//	param.append('\0'); //null termination
 //	const char* filec = file.c_str();
 //	const char* paramc = param.c_str();
 
-	char* filec[size];
-//	char* paramc[];
-	strcpy(filec, file.c_str());
+	len = cmd.length();
+	char* const paramc = new char[len + 1];
+	for (int i = 0; i < len; i++)
+	{
+		paramc[i] = cmd[i];
+	}
+	paramc[len] = '\0';
+	
+	char* const argv[] = {paramc};
+	
+//	char*const param[] = {
+//
+//	char filec[1] = file;
+//	char paramc[size+1] = param;
+
+//	strcpy(filec, file.c_str());
 	
 	//fork execution to it's own process
 	int pid = fork();
 	if(pid == 0)
 	{
-		int error = execvp(filec[0], filec);
+		int error = execvp(argv[0], argv);
 		if (error == -1)
 		{
 			perror("execvp"); // throw an error
@@ -90,7 +105,7 @@ void cmd_interpreter(vector<string> input)
 		}
 		else
 		{
-			execvp(filec[0], filec);
+			execvp(argv[0], argv);
 		}
 	}
 	else
@@ -98,6 +113,7 @@ void cmd_interpreter(vector<string> input)
 		//parent wait
 		waitpid(-1, NULL, 0);
 	}
+	delete [] paramc;
 
 	return;
 
