@@ -18,7 +18,17 @@ int main (int argc, char** argv)
 		int error = execvp(argv[0], argv);
 		if (error == -1)
 		{
-			perror("execvp");
+			perror("execvp"); //throw an error
+			exit(1);
+		}
+		else
+		{
+			//main parse here
+			if (argv[0] != "exit")
+			{
+				//execute
+			}
+			exit(0);
 		}
 	}
 	else
