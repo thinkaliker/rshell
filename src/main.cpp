@@ -22,44 +22,44 @@ int main (int argc, char** argv)
 {
 	vector<string> inVector;
 	string input;
-	input = shell_prompt();
-	while(input != "exit")
-	{
-		//string input;
-		//vector<string> inVector;
 
-//		input = shell_prompt();
-//		if (input != "exit")
-//		{
+	while(true)
+	{	
+		input = shell_prompt();
+		//while (inVector.back() != "")
+		if (input == "exit")
+		{
+			cout << "Exiting." << endl;
+			exit(0);
+		}
+		else
+		{
 			char_separator<char> sep(";|&");
 			string t;
 			tokenizer< char_separator<char> > tokens(input, sep);
 			BOOST_FOREACH(t, tokens);
 			{
 				inVector.push_back(t);
-		//		cout << t << endl;
+//				cout << t << endl;
 			}
-			//cmd_interpreter(inVector);
-	//	}
-	//	else
-	//	{
-	//		cout << "Goodbye." << endl;
-	//		exit(0);
-	//	}
+		}
 		cmd_interpreter(inVector);
-	input = shell_prompt();	
 	}
-	cout << "Exiting." << endl;
-	exit(0);
 
 	return 0;
 }
 
 void cmd_interpreter(vector<string> input)
 {
-	//int size = input.size();
-	for (unsigned i = 0; true ; i++)
-		cout << i << ": " << input.at(i) << endl;
+	unsigned size = input.size();
+
+//	if (!input.empty())
+	{
+	for (unsigned i = 0; i < size  ; i++)
+		cout << "test " << input.at(i) << endl;
+	}
+	return;
+
 	/*
 	int pid = fork();
 	if (pid == 0)
@@ -106,7 +106,7 @@ string shell_prompt()
 	}
 	*/
 	cout << "rshell$ ";
-	cin >> in;
+	getline(cin, in);
 	cin.clear();
 	return in;
 }
