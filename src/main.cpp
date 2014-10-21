@@ -11,6 +11,7 @@
 #include <sys/wait.h>
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 using namespace boost;
@@ -29,7 +30,7 @@ int main (int argc, char** argv)
 		//while (inVector.back() != "")
 		if (input == "exit")
 		{
-			cout << "Exiting." << endl;
+			cout << "Exiting rshell." << endl;
 			exit(0);
 		}
 		else
@@ -52,12 +53,52 @@ int main (int argc, char** argv)
 void cmd_interpreter(vector<string> input)
 {
 	unsigned size = input.size();
+	string cmd = input.back();
+	string file;
+	string param;
+	vector<string> strs;
 
-//	if (!input.empty())
+//	cout << "last " << input.back() << endl;
+//	for (unsigned i = 0; i < size ; i++)
+//		cout << "test " << input.at(i) << endl;
+
+	//parse command to seperate command and parameters
+	
+	split(strs, cmd, is_any_of(" "));
+	file = strs.front();
+	for (unsigned i = 1; i < strs.size(); i++)
 	{
-	for (unsigned i = 0; i < size  ; i++)
-		cout << "test " << input.at(i) << endl;
+		param.append(strs.at(i));
 	}
+	param.append('\0'); //null termination
+//	const char* filec = file.c_str();
+//	const char* paramc = param.c_str();
+
+	char* filec[size];
+//	char* paramc[];
+	strcpy(filec, file.c_str());
+	
+	//fork execution to it's own process
+	int pid = fork();
+	if(pid == 0)
+	{
+		int error = execvp(filec[0], filec);
+		if (error == -1)
+		{
+			perror("execvp"); // throw an error
+			exit(1);
+		}
+		else
+		{
+			execvp(filec[0], filec);
+		}
+	}
+	else
+	{
+		//parent wait
+		waitpid(-1, NULL, 0);
+	}
+
 	return;
 
 	/*
