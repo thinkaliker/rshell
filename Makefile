@@ -1,5 +1,5 @@
 opt=-Wall -Werror -ansi -pedantic
-out=./bin/rshell/rshell
+out=./bin/rshell
 
 all:
 	mkdir ./bin
