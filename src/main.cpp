@@ -16,35 +16,50 @@ using namespace std;
 using namespace boost;
 
 string shell_prompt(); //prototype for prompt function
-
+void cmd_interpreter(vector<string>); //prototype for command interpreter
 
 int main (int argc, char** argv)
 {
-	while(true)
+	vector<string> inVector;
+	string input;
+	input = shell_prompt();
+	while(input != "exit")
 	{
-		string input;
-		vector<string> inVector;
+		//string input;
+		//vector<string> inVector;
 
-		input = shell_prompt();
-		if (input != "exit")
-		{
+//		input = shell_prompt();
+//		if (input != "exit")
+//		{
 			char_separator<char> sep(";|&");
-			tokenizer< char_separator<char> > tokens(input, sep);
 			string t;
+			tokenizer< char_separator<char> > tokens(input, sep);
 			BOOST_FOREACH(t, tokens);
 			{
 				inVector.push_back(t);
-				//cout << t << endl;
+		//		cout << t << endl;
 			}
-			//tokenizer<> tokens(shell_prompt());
-		}
-		else
-		{
-			cout << "Goodbye." << endl;
-			exit(0);
-		}
-		
+			//cmd_interpreter(inVector);
+	//	}
+	//	else
+	//	{
+	//		cout << "Goodbye." << endl;
+	//		exit(0);
+	//	}
+		cmd_interpreter(inVector);
+	input = shell_prompt();	
 	}
+	cout << "Exiting." << endl;
+	exit(0);
+
+	return 0;
+}
+
+void cmd_interpreter(vector<string> input)
+{
+	//int size = input.size();
+	for (unsigned i = 0; true ; i++)
+		cout << i << ": " << input.at(i) << endl;
 	/*
 	int pid = fork();
 	if (pid == 0)
@@ -69,8 +84,7 @@ int main (int argc, char** argv)
 		wait(NULL);
 	}
 	*/	
-	return 0;
-}
+} 
 
 string shell_prompt()
 {
@@ -93,5 +107,6 @@ string shell_prompt()
 	*/
 	cout << "rshell$ ";
 	cin >> in;
+	cin.clear();
 	return in;
 }
