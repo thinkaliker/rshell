@@ -1,9 +1,13 @@
-opt="-Wall -Werror -ansi -pedantic"
+opt=-Wall -Werror -ansi -pedantic
+out=./bin/rshell
 
 all:
 	mkdir ./bin
-	g++ ./src/main.cpp  $opt -o ./bin/rshell
+	g++ $(opt) ./src/main.cpp  -o $(out)/rshell
 
 rshell:
 	mkdir ./bin
-	g++ ./src/main.cpp $opt -o ./bin/rshell
+	g++ $(opt) ./src/main.cpp  -o $(out)/rshell
+
+clean:
+	rm -rf ./bin
