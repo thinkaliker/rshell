@@ -17,6 +17,7 @@ using namespace boost;
 
 string shell_prompt(); //prototype for prompt function
 
+
 int main (int argc, char** argv)
 {
 	while(true)
@@ -25,7 +26,7 @@ int main (int argc, char** argv)
 		vector<string> inVector;
 
 		input = shell_prompt();
-		if (input != "exit" || input != "Exit")
+		if (input != "exit")
 		{
 			char_separator<char> sep(";|&");
 			tokenizer< char_separator<char> > tokens(input, sep);
@@ -33,14 +34,14 @@ int main (int argc, char** argv)
 			BOOST_FOREACH(t, tokens);
 			{
 				inVector.push_back(t);
-				cout << t << endl;
+				//cout << t << endl;
 			}
-	
 			//tokenizer<> tokens(shell_prompt());
 		}
 		else
 		{
 			cout << "Goodbye." << endl;
+			exit(0);
 		}
 		
 	}
