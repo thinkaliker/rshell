@@ -17,7 +17,7 @@ using namespace std;
 using namespace boost;
 
 string shell_prompt(); //prototype for prompt function
-char[] cmd_interpreter(vector<string>); //prototype for command interpreter
+int cmd_interpreter(string, char**); //prototype for command interpreter
 
 int main (int argc, char** argv)
 {
@@ -43,22 +43,24 @@ int main (int argc, char** argv)
 				//TODO do different things depending on delimiters in vector
 				inVector.push_back(t);
 			}
-			cmd_interpreter(inVector);
+			string in = inVector.back();
+			cmd_interpreter(in, argv);
+			
 		}
 	}
 
 	return 0;
 }
 
-char[] cmd_interpreter(vector<string> input)
+int cmd_interpreter(string input, char** argv)
 {
 //	unsigned size = input.size();
-	string cmd = input.back();
- 	string file;
-	int len = cmd.length();
+//	string cmd = input.back();
+// 	string file;
+//	int len = input.length() + 1;
 //	char* param;
 
-	vector<string> strs;
+//	vector<string> strs;
 
 //	cout << "last " << input.back() << endl;
 //	for (unsigned i = 0; i < size ; i++)
@@ -66,7 +68,7 @@ char[] cmd_interpreter(vector<string> input)
 
 	//parse command to seperate command and parameters
 	
-	split(strs, cmd, is_any_of(" "));
+//	split(strs, input, is_any_of(" "));
 //	file = strs.front();
 	
 //	for (unsigned i = 1; i < strs.size(); i++)
@@ -77,30 +79,29 @@ char[] cmd_interpreter(vector<string> input)
 //	const char* filec = file.c_str();
 //	const char* paramc = param.c_str();
 
-	len = cmd.length();
-	file = strs.front();
-	cout << "file:" << file << endl;
+//	file = strs.front();
+//	cout << "file:" << file << endl;
 	
-	char* const paramc = new char[len+1];
+	
+//	char paramc[len+1];
 //	char* const charc = new  [file.length()];
-	for (int i = 0; i != len; i++)
-	{
-		if (i == len)
-		{
-			paramc[i] = '\0';
-		}
-		paramc[i] =  strs.at(i).c_str();	
-	}
-
-}
-
-int execute(char* const cmd)
-{	
+//	for (int i = 0; i != len; i++)
+//	{
+//		if (i == len)
+//		{
+//			paramc[i] = '\0';
+//		}
+//		paramc[i] =  strs.at(i).c_str();
+//	}
+	
 	//fork execution to it's own process
+//	char** cmd[];	
+	strcpy(argv[0], input.c_str());
+	
 	int pid = fork();
 	if(pid == 0)
 	{
-		int error = execvp(cmd[0], cmd);
+		int error = execvp(argv[0], argv);
 		if (error == -1)
 		{
 			perror("execvp"); // throw an error
@@ -109,7 +110,7 @@ int execute(char* const cmd)
 		}
 		else
 		{
-			execvp(cmd[0], cmd);
+			execvp(argv[0], argv);
 		}
 	}
 	else
@@ -118,7 +119,7 @@ int execute(char* const cmd)
 		waitpid(-1, NULL, 0);
 	}
 
-	return;
+	return 0;
 	
 } 
 
