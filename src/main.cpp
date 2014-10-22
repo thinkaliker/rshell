@@ -17,7 +17,7 @@ using namespace std;
 using namespace boost;
 
 string shell_prompt(); //prototype for prompt function
-void cmd_interpreter(vector<string>); //prototype for command interpreter
+char[] cmd_interpreter(vector<string>); //prototype for command interpreter
 
 int main (int argc, char** argv)
 {
@@ -35,29 +35,30 @@ int main (int argc, char** argv)
 		}
 		else
 		{
-			char_separator<char> sep(";|&");
+			char_separator<char> sep(";|&", "|&");
 			string t;
 			tokenizer< char_separator<char> > tokens(input, sep);
 			BOOST_FOREACH(t, tokens);
 			{
+				//TODO do different things depending on delimiters in vector
 				inVector.push_back(t);
-//				cout << t << endl;
 			}
+			cmd_interpreter(inVector);
 		}
-		cmd_interpreter(inVector);
 	}
 
 	return 0;
 }
 
-void cmd_interpreter(vector<string> input)
+char[] cmd_interpreter(vector<string> input)
 {
 //	unsigned size = input.size();
 	string cmd = input.back();
-//	string file;
-//	string param;
-	int len;
-//	vector<string> strs;
+ 	string file;
+	int len = cmd.length();
+//	char* param;
+
+	vector<string> strs;
 
 //	cout << "last " << input.back() << endl;
 //	for (unsigned i = 0; i < size ; i++)
@@ -65,7 +66,7 @@ void cmd_interpreter(vector<string> input)
 
 	//parse command to seperate command and parameters
 	
-//	split(strs, cmd, is_any_of(" "));
+	split(strs, cmd, is_any_of(" "));
 //	file = strs.front();
 	
 //	for (unsigned i = 1; i < strs.size(); i++)
@@ -77,35 +78,38 @@ void cmd_interpreter(vector<string> input)
 //	const char* paramc = param.c_str();
 
 	len = cmd.length();
-	char* const paramc = new char[len + 1];
-	for (int i = 0; i < len; i++)
+	file = strs.front();
+	cout << "file:" << file << endl;
+	
+	char* const paramc = new char[len+1];
+//	char* const charc = new  [file.length()];
+	for (int i = 0; i != len; i++)
 	{
-		paramc[i] = cmd[i];
+		if (i == len)
+		{
+			paramc[i] = '\0';
+		}
+		paramc[i] =  strs.at(i).c_str();	
 	}
-	paramc[len] = '\0';
-	
-	char* const argv[] = {paramc};
-	
-//	char*const param[] = {
-//
-//	char filec[1] = file;
-//	char paramc[size+1] = param;
 
-//	strcpy(filec, file.c_str());
-	
+}
+
+int execute(char* const cmd)
+{	
 	//fork execution to it's own process
 	int pid = fork();
 	if(pid == 0)
 	{
-		int error = execvp(argv[0], argv);
+		int error = execvp(cmd[0], cmd);
 		if (error == -1)
 		{
 			perror("execvp"); // throw an error
 			exit(1);
+			return error;
 		}
 		else
 		{
-			execvp(argv[0], argv);
+			execvp(cmd[0], cmd);
 		}
 	}
 	else
@@ -113,34 +117,9 @@ void cmd_interpreter(vector<string> input)
 		//parent wait
 		waitpid(-1, NULL, 0);
 	}
-	delete [] paramc;
 
 	return;
-
-	/*
-	int pid = fork();
-	if (pid == 0)
-	{	
-		int error = execvp(argv[0], argv);
-		if (error == -1)
-		{
-			perror("execvp"); //throw an error
-			exit(1);
-		}
-		else
-		{
-			if (argv[0] != "exit")
-			{
-				//execute
-			}
-			exit(0);
-		}
-	}
-	else
-	{
-		wait(NULL);
-	}
-	*/	
+	
 } 
 
 string shell_prompt()
