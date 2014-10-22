@@ -35,15 +35,30 @@ int main (int argc, char** argv)
 		}
 		else
 		{
-			char_separator<char> sep(";|&", "|&");
+			char_separator<char> sep(";|&#");
 			string t;
 			tokenizer< char_separator<char> > tokens(input, sep);
 			BOOST_FOREACH(t, tokens);
 			{
 				//TODO do different things depending on delimiters in vector
-				inVector.push_back(t);
+				//inVector.push_back(t);
+		//		for(unsigned i = 0; i < inVector.size() - 1; i++)
+		//		{
+				//	cerr << inVector.at(i) << endl;
+					if (t != "#"|| t.at(0) != '#')
+					{
+					//	for (unsigned k = inVector.size(); k < inVector.size() ; k--)
+							inVector.push_back(t); 
+					}
+		//			else
+		//			{
+						
+		//			}
+		//		}
 			}
-			string in = inVector.back();
+					
+		//	cerr << inVector.back() << endl;
+			string in = inVector.at(inVector.size() - 1);
 			cmd_interpreter(in, argv);
 			
 		}
@@ -95,9 +110,11 @@ int cmd_interpreter(string input, char** argv)
 //	}
 	
 	//fork execution to it's own process
-//	char** cmd[];	
+//	char** cmd[];
+		
 	strcpy(argv[0], input.c_str());
-	
+	strcat(argv[0], "\0");
+	//cerr << argv[0] << endl;
 	int pid = fork();
 	if(pid == 0)
 	{
