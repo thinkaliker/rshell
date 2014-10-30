@@ -29,11 +29,17 @@ int main(int argc, char** argv)
 		}
 	}
 	
-//TODO: implement whatever this is	
+//TODO: implement whatever this is which has something to do with hidden files
 //	if (flags & FLAG_a && curfile[0] == '.')
 	{
 		
-	}	
+	}
+//TODO: implement the detailed list case with the drwx items using statbuf and .st_mode
+
+//TODO: implement the recursive function...ew, recursion
+
+
+//TODO: create a default case where no parameters are given
 
 	return 0;
 }
