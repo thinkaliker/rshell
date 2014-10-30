@@ -1,16 +1,22 @@
+DIRECTORY=./bin
 opt=-Wall -Werror -ansi -pedantic
-out=./bin/rshell
-src=./src/main.cpp
+rshellout=./bin/rshell
+rshellsrc=./src/main.cpp
+lsout=./bin/ls
+lssrc=./src/ls.cpp
 rmb=rm -rf ./bin
 
 all:
-	[ -d "./bin" ] && $(rmb)
+	if [ -d "$(DIRECTORY)" ]; then  $(rmb); fi
 	mkdir ./bin
-	g++ $(opt) $(src) -o $(out)
+	g++ $(opt) $(rshellsrc) -o $(rshellout)
 
 rshell:
 	mkdir ./bin
-	g++ $(opt) $(src) -o $(out)
+	g++ $(opt) $(rshellsrc) -o $(rshellout)
 
+ls:
+	mkdir ./bin
+	g++ $(opt) $(lssrc) -o $(lsout)
 clean:
 	$(rmb)
