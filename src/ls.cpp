@@ -2,6 +2,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <dirent.h>
+#include <errno.h>
 using namespace std;
 
 #define FLAG_a 1
@@ -29,12 +31,35 @@ int main(int argc, char** argv)
 		}
 	}
 	
+	struct stat statbuf;
+
 //TODO: implement whatever this is which has something to do with hidden files
-//	if (flags & FLAG_a && curfile[0] == '.')
+	if (flags & FLAG_a && curfile[0] == '.')
 	{
 		
 	}
 //TODO: implement the detailed list case with the drwx items using statbuf and .st_mode
+	if (flags & FLAG_l)
+	{
+		//need more code here about stuff
+
+
+		if(S_ISDIR(statbuf.st_mode))
+			cout << "d";
+		else cout << "-";
+		if(statbuf.st_mode & S_IRUSR)
+			cout << "r";
+		else cout << "-";
+		if(statbuf.st_mode & S_IWUSR)
+			cout << "w";
+		else cout << "-";
+		if(statbuf.st_mode & S_IXUSR)
+			cout << "x";
+		else cout << "-";
+		
+		//additional info like user, machine, additional stuff
+	}
+	
 
 //TODO: implement the recursive function...ew, recursion
 
