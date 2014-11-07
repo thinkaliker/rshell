@@ -2,28 +2,33 @@ bindir=./bin
 opt=-Wall -Werror -ansi -pedantic
 rshellout=-o ./bin/rshell
 rshellsrc=./src/main.cpp
-cpout = ./bin/cp
-cpsrc = ./src/cp.cpp
+cpout =-o ./bin/cp
+cpsrc =./src/cp.cpp
 lsout=-o ./bin/ls
 lssrc=./src/ls.cpp
-rmb=rm -rf ./bin
+rmb=rm -rf $(bindir)
+chkdir=if [ -d "$(bindir)" ]; then  $(rmb); fi
+
 
 all:
-	if [ -d "$(bindir)" ]; then  $(rmb); fi
-	mkdir ./bin
+	$(chkdir)
+	mkdir $(bindir)
 	g++ $(opt) $(rshellsrc) $(rshellout)
 	g++ $(opt) $(lssrc) $(lsout)
 	g++ $(opt) $(cpsrc) $(cpout)
 
 rshell:
-	mkdir ./bin
+	$(chkdir)
+	mkdir $(bindir)
 	g++ $(opt) $(rshellsrc) $(rshellout)
 
 ls:
-	mkdir ./bin
+	$(chkdir)
+	mkdir $(bindir)
 	g++ $(opt) $(lssrc) $(lsout)
 cp:
-	mkdir ./bin
+	$(chkdir)
+	mkdir $(bindir)
 	g++ $(opt) $(cpsrc) $(cpout)
 clean:
 	$(rmb)
