@@ -4,6 +4,10 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <errno.h>
+#include <cstdlib>
+#include <stdio.h>
+#include <string.h>
+#include <vector>
 using namespace std;
 
 #define FLAG_a 1
@@ -11,6 +15,7 @@ using namespace std;
 #define FLAG_R 4
 
 bool is_directory(char* path);
+//void check_mod(stat &statbuf);
 
 int main(int argc, char** argv)
 {
@@ -36,7 +41,7 @@ int main(int argc, char** argv)
 	struct stat statbuf;
 
 //TODO: implement whatever this is which has something to do with hidden files
-	if (flags & FLAG_a && curfile[0] == '.')
+	if (flags & FLAG_a)
 	{
 		
 	}
@@ -56,21 +61,48 @@ int main(int argc, char** argv)
 
 //TODO: create a case where a file is passed in as a parameter
 
+//TODO: create a case where a directory is passed in without any flags
+
 //TODO: create a default case where no parameters are given
 	
-	{
-		char *dirName = ".";
-		DIR *dirp;
-		if ((*dirp = opendir(dirName)) == -1)
+
+//this will work for -a
+
+		vector<string> files;
+
+		const char *dirName = ".";
+		DIR *dirp = opendir(dirName);
+		if ((dirp == 0))
 		{
 			perror("opendir");
 			exit(1);
 		}
-		dirent *direntp;
-		while ((direntp = readdir(dirp)))
-			cout << direntp->d_name << endl;
-		closedir(dirp);
-	}
+		else
+		{
+			errno = 0;
+			dirent *direntp;
+			while (true)
+			{
+				if ((direntp = readdir(dirp)) != 0)
+				{
+					cout << direntp->d_name << endl;
+					files.push_back(direntp->d_name);
+					continue;
+				}
+				if(errno != 0)
+				{
+				perror("readdir");
+				exit(1);
+				}
+				break;
+			}
+			if (closedir(dirp) != 0)
+			{
+				perror("closedir");
+				exit(1);
+			}
+		}
+	
 	
 
 	return 0;
@@ -79,9 +111,11 @@ int main(int argc, char** argv)
 bool is_directory(char* path)
 {
 	//function to check if a path is a directory or not
+	return true;
 }
 
-void check_mod(stat statbuf)
+//void check_mod(stat &statbuf)
+/*
 {
 
 	if(S_ISDIR(statbuf.st_mode))
@@ -99,3 +133,4 @@ void check_mod(stat statbuf)
 	
 
 }
+*/
