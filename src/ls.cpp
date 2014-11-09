@@ -16,6 +16,7 @@ using namespace std;
 
 bool is_directory(char* path);
 //void check_mod(stat &statbuf);
+void check_dir(const char* path, vector<string>&);
 
 int main(int argc, char** argv)
 {
@@ -39,11 +40,18 @@ int main(int argc, char** argv)
 	}
 	
 	struct stat statbuf;
+	vector<string> files;
+//TODO: check if directory name is provided, otherwise 
 
 //TODO: implement whatever this is which has something to do with hidden files
 	if (flags & FLAG_a)
-	{
-		
+	{	
+		vector<string> files;
+
+		const char *dirName = ".";
+
+		check_dir(dirName, files);
+
 	}
 //TODO: implement the detailed list case with the drwx items using statbuf and .st_mode
 	if (flags & FLAG_l)
@@ -64,46 +72,7 @@ int main(int argc, char** argv)
 //TODO: create a case where a directory is passed in without any flags
 
 //TODO: create a default case where no parameters are given
-	
-
-//this will work for -a
-
-		vector<string> files;
-
-		const char *dirName = ".";
-		DIR *dirp = opendir(dirName);
-		if ((dirp == 0))
-		{
-			perror("opendir");
-			exit(1);
-		}
-		else
-		{
-			errno = 0;
-			dirent *direntp;
-			while (true)
-			{
-				if ((direntp = readdir(dirp)) != 0)
-				{
-					cout << direntp->d_name << endl;
-					files.push_back(direntp->d_name);
-					continue;
-				}
-				if(errno != 0)
-				{
-				perror("readdir");
-				exit(1);
-				}
-				break;
-			}
-			if (closedir(dirp) != 0)
-			{
-				perror("closedir");
-				exit(1);
-			}
-		}
-	
-	
+				
 
 	return 0;
 }
@@ -134,3 +103,39 @@ bool is_directory(char* path)
 
 }
 */
+
+void check_dir(const char* dirName, vector<string>& files)
+{
+	DIR *dirp = opendir(dirName);
+	if ((dirp == 0))
+	{
+		perror("opendir");
+		exit(1);
+	}
+	else
+	{
+		errno = 0;
+		dirent *direntp;
+		while (true)
+		{
+			if ((direntp = readdir(dirp)) != 0)
+			{
+				cout << direntp->d_name << endl;
+				files.push_back(direntp->d_name);
+				continue;
+			}
+			if(errno != 0)
+			{
+			perror("readdir");
+			exit(1);
+			}
+			break;
+		}
+		if (closedir(dirp) != 0)
+		{
+			perror("closedir");
+			exit(1);
+		}
+	}
+	
+}
