@@ -10,26 +10,17 @@ lssrc=./src/ls.cpp
 rmb=rm -rf $(bindir)
 chkdir=if [ -d "$(bindir)" ]; then  $(rmb); fi
 
+.PHONY: all
+all: dir rshell ls cp
 
-all:
+dir:
 	$(chkdir)
 	mkdir $(bindir)
-	g++ $(opt) $(rshellsrc) $(rshellout)
-	g++ $(opt) $(cpsrc) $(cpout)
-	g++ $(opt) $(lssrc) $(lsout)
-
 rshell:
-	$(chkdir)
-	mkdir $(bindir)
 	g++ $(opt) $(rshellsrc) $(rshellout)
-
 ls:
-	$(chkdir)
-	mkdir $(bindir)
 	g++ $(opt) $(lssrc) $(lsout)
 cp:
-	$(chkdir)
-	mkdir $(bindir)
 	g++ $(opt) $(cpsrc) $(cpout)
 debug:
 	$(chkdir)
