@@ -68,7 +68,7 @@ int main(int argc, char** argv)
 	{
 		//need more code here about stuff like passing in the current directory
 		
-		const char *dirName = ".";
+		const char *dirName = "/bin";
 		check_modifiers(dirName);
 		
 
@@ -125,10 +125,12 @@ void check_modifiers(const char* dirName)
 	if(stat(dirName, &statbuf) == 0)
 	{
 
+		//directory
 		if(S_ISDIR(statbuf.st_mode))
 			cout << "d";
 		else 
 			cout << "-";
+		//user cluster
 		if(statbuf.st_mode & S_IRUSR)
 			cout << "r";
 		else 
@@ -141,7 +143,35 @@ void check_modifiers(const char* dirName)
 			cout << "x";
 		else 
 			cout << "-";
-		
+		//group cluster
+		if(statbuf.st_mode & S_IRGRP)
+			cout << "r";
+		else 
+			cout << "-";
+		if(statbuf.st_mode & S_IWGRP)
+			cout << "w";
+		else 
+			cout << "-";
+		if(statbuf.st_mode & S_IXGRP)
+			cout << "x";
+		else 
+			cout << "-";
+		//other cluster
+		if(statbuf.st_mode & S_IROTH)
+			cout << "r";
+		else 
+			cout << "-";
+		if(statbuf.st_mode & S_IWOTH)
+			cout << "w";
+		else 
+			cout << "-";
+		if(statbuf.st_mode & S_IXOTH)
+			cout << "x";
+		else 
+			cout << "-";
+
+		//more stuff			
+
 		cout << endl;
 	}
 	else
