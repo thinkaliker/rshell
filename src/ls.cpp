@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <vector>
+#include <iomanip>
+#include <algorithm>
 using namespace std;
 
 #define FLAG_a 1
@@ -41,6 +43,7 @@ int main(int argc, char** argv)
 	
 	struct stat statbuf;
 	vector<string> files;
+
 //TODO: check if directory name is provided, otherwise 
 
 //TODO: implement whatever this is which has something to do with hidden files
@@ -48,10 +51,12 @@ int main(int argc, char** argv)
 	{	
 		const char *dirName = ".";
 		check_dir(dirName, files);
+		sort(files.begin(), files.end());
 		for (unsigned i = 0; i < files.size(); i++)
 		{
-			cout << files.at(i) << endl;
+			cout << files[i] << "  ";
 		}
+		cout << endl;
 
 	}
 //TODO: implement the detailed list case with the drwx items using statbuf and .st_mode
@@ -73,14 +78,22 @@ int main(int argc, char** argv)
 //TODO: create a case where a directory is passed in without any flags
 
 //TODO: create a default case where no parameters are given
-				
-	const char *dirName = ".";
-	check_dir(dirName, files);
-	for (unsigned i = 0; i < files.size(); i++)
+
+
+	if (false)//CHANGE THIS PLS
 	{
-		if (files.at(i).at(1) != '.')
+		const char *dirName = ".";
+		check_dir(dirName, files);
+		for (unsigned i = 0; i < files.size(); i++)
 		{
-			cout << files.at(i) << endl;
+			if (files.at(i).at(0) != '.')
+			{
+				cout << left << setw(10) << files.at(i) ;
+			}
+			if ((i % 8) == 0)
+			{
+				cout << endl;
+			}
 		}
 	}
 
