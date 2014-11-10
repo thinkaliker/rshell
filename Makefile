@@ -1,12 +1,8 @@
 bindir=./bin
 opt=-Wall -Werror -ansi -pedantic
-dbgopt=-Wall -Werror -ansi -pedantic -g
-rshellout=-o ./bin/rshell
-rshellsrc=./src/main.cpp
-cpout =-o ./bin/cp
-cpsrc =./src/cp.cpp
-lsout=-o ./bin/ls
-lssrc=./src/ls.cpp
+dbgopt=$(opt) -g
+out=-o $(bindir)
+src=./src
 rmb=rm -rf $(bindir)
 chkdir=if [ -d "$(bindir)" ]; then  $(rmb); fi
 
@@ -17,16 +13,16 @@ dir:
 	$(chkdir)
 	mkdir $(bindir)
 rshell:
-	g++ $(opt) $(rshellsrc) $(rshellout)
+	g++ $(opt) $(src)/main.cpp $(out)/rshell
 ls:
-	g++ $(opt) $(lssrc) $(lsout)
+	g++ $(opt) $(src)/ls.cpp $(out)/ls
 cp:
-	g++ $(opt) $(cpsrc) $(cpout)
+	g++ $(opt) $(src)/cp.cpp $(out)/cp
 debug:
 	$(chkdir)
 	mkdir $(bindir)
-	g++ $(dbgopt) $(rshellsrc) $(rshellout)
-	g++ $(dbgopt) $(cpsrc) $(cpout)
-	g++ $(dbgopt) $(lssrc) $(lsout)
+	g++ $(dbgopt) $(src)/main.cpp $(out)/rshell
+	g++ $(dbgopt) $(src)/cp.cpp $(out)/cp
+	g++ $(dbgopt) $(src)/ls.cpp $(out)/ls
 clean:
 	$(rmb)
