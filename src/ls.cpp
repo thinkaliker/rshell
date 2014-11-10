@@ -39,6 +39,11 @@ int main(int argc, char** argv)
 					flags |= FLAG_R;
 			}
 		}
+		if ((argv[i][0] == '\\') || ((argv[i][0] >= '0') && (argv[i][0] <= 'z')))
+		{
+			//this is a directory or a file
+			;
+		}
 	}
 	
 	struct stat statbuf;
@@ -57,7 +62,7 @@ int main(int argc, char** argv)
 			cout << files[i] << "  ";
 		}
 		cout << endl;
-
+		
 	}
 //TODO: implement the detailed list case with the drwx items using statbuf and .st_mode
 	if (flags & FLAG_l)
@@ -80,21 +85,26 @@ int main(int argc, char** argv)
 //TODO: create a default case where no parameters are given
 
 
-	if (false)//CHANGE THIS PLS
+	if ((argv[1] == 0))
 	{
 		const char *dirName = ".";
 		check_dir(dirName, files);
+		sort(files.begin(), files.end());
 		for (unsigned i = 0; i < files.size(); i++)
 		{
+			
 			if (files.at(i).at(0) != '.')
 			{
-				cout << left << setw(10) << files.at(i) ;
+				//cout << left << setw(11) << files.at(i) ;
+				cout << files.at(i) << " ";
 			}
-			if ((i % 8) == 0)
+			/*
+			if (((i % 10) == 0) && (i != 0))
 			{
 				cout << endl;
-			}
+			}*/
 		}
+		cout << endl;
 	}
 
 
