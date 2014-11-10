@@ -1,5 +1,6 @@
 bindir=./bin
 opt=-Wall -Werror -ansi -pedantic
+dbgopt=-Wall -Werror -ansi -pedantic -g
 rshellout=-o ./bin/rshell
 rshellsrc=./src/main.cpp
 cpout =-o ./bin/cp
@@ -14,8 +15,8 @@ all:
 	$(chkdir)
 	mkdir $(bindir)
 	g++ $(opt) $(rshellsrc) $(rshellout)
-	g++ $(opt) $(lssrc) $(lsout)
 	g++ $(opt) $(cpsrc) $(cpout)
+	g++ $(opt) $(lssrc) $(lsout)
 
 rshell:
 	$(chkdir)
@@ -30,5 +31,11 @@ cp:
 	$(chkdir)
 	mkdir $(bindir)
 	g++ $(opt) $(cpsrc) $(cpout)
+debug:
+	$(chkdir)
+	mkdir $(bindir)
+	g++ $(dbgopt) $(rshellsrc) $(rshellout)
+	g++ $(dbgopt) $(cpsrc) $(cpout)
+	g++ $(dbgopt) $(lssrc) $(lssrc)
 clean:
 	$(rmb)
