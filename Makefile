@@ -36,6 +36,6 @@ debug:
 	mkdir $(bindir)
 	g++ $(dbgopt) $(rshellsrc) $(rshellout)
 	g++ $(dbgopt) $(cpsrc) $(cpout)
-	g++ $(dbgopt) $(lssrc) $(lssrc)
+	g++ $(dbgopt) $(lssrc) $(lsout)
 clean:
 	$(rmb)
