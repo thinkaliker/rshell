@@ -1,6 +1,7 @@
 # rshell
 
 This is the rshell project for the CS 100 class at UC Riverside.
+
 This project uses the MIT license. See LICENSE for details.
 
 ## rshell
@@ -23,11 +24,11 @@ This is the custom shell itself.
 
 This is a custom made copy program.
 
-Created in collaboration with (nmlapre)[http://github.com/nmlapre] for lab.
+Created in collaboration with [nmlapre](http://github.com/nmlapre) for lab.
 
 ## Features
 
-- see the (ucr-cs100 repository)[http://github.com/mikeizbicki/ucr-cs100/tree/cs100-2014fall/assignments/lab/lab5-cp] for details.
+- see the [ucr-cs100 repository](http://github.com/mikeizbicki/ucr-cs100/tree/cs100-2014fall/assignments/lab/lab5-cp) for details.
 
 ## ls
 
