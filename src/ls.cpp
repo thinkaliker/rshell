@@ -46,11 +46,12 @@ int main(int argc, char** argv)
 //TODO: implement whatever this is which has something to do with hidden files
 	if (flags & FLAG_a)
 	{	
-		vector<string> files;
-
 		const char *dirName = ".";
-
 		check_dir(dirName, files);
+		for (unsigned i = 0; i < files.size(); i++)
+		{
+			cout << files.at(i) << endl;
+		}
 
 	}
 //TODO: implement the detailed list case with the drwx items using statbuf and .st_mode
@@ -73,6 +74,16 @@ int main(int argc, char** argv)
 
 //TODO: create a default case where no parameters are given
 				
+	const char *dirName = ".";
+	check_dir(dirName, files);
+	for (unsigned i = 0; i < files.size(); i++)
+	{
+		if (files.at(i).at(1) != '.')
+		{
+			cout << files.at(i) << endl;
+		}
+	}
+
 
 	return 0;
 }
@@ -120,7 +131,7 @@ void check_dir(const char* dirName, vector<string>& files)
 		{
 			if ((direntp = readdir(dirp)) != 0)
 			{
-				cout << direntp->d_name << endl;
+//				cout << direntp->d_name << endl;
 				files.push_back(direntp->d_name);
 				continue;
 			}
