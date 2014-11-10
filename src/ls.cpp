@@ -17,7 +17,7 @@ using namespace std;
 #define FLAG_R 4
 
 bool is_directory(char* path);
-//void check_mod(stat &statbuf);
+void check_modifiers(const char* path);
 void check_dir(const char* path, vector<string>&);
 
 int main(int argc, char** argv)
@@ -46,7 +46,6 @@ int main(int argc, char** argv)
 		}
 	}
 	
-	struct stat statbuf;
 	vector<string> files;
 
 //TODO: check if directory name is provided, otherwise 
@@ -68,8 +67,9 @@ int main(int argc, char** argv)
 	if (flags & FLAG_l)
 	{
 		//need more code here about stuff like passing in the current directory
-
-		stat("bin", &statbuf); //change bin to take in input later
+		
+		const char *dirName = ".";
+		check_modifiers(dirName);
 		
 
 		//additional info like user, machine, additional stuff
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
 			if (files.at(i).at(0) != '.')
 			{
 				//cout << left << setw(11) << files.at(i) ;
-				cout << files.at(i) << " ";
+				cout << files.at(i) << "  ";
 			}
 			/*
 			if (((i % 10) == 0) && (i != 0))
@@ -117,26 +117,40 @@ bool is_directory(char* path)
 	return true;
 }
 
-//void check_mod(stat &statbuf)
-/*
+
+void check_modifiers(const char* dirName)
 {
-
-	if(S_ISDIR(statbuf.st_mode))
-		cout << "d";
-	else cout << "-";
-	if(statbuf.st_mode & S_IRUSR)
-		cout << "r";
-	else cout << "-";
-	if(statbuf.st_mode & S_IWUSR)
-		cout << "w";
-	else cout << "-";
-	if(statbuf.st_mode & S_IXUSR)
-		cout << "x";
-	else cout << "-";
+	struct stat statbuf;
 	
+	if(stat(dirName, &statbuf) == 0)
+	{
 
+		if(S_ISDIR(statbuf.st_mode))
+			cout << "d";
+		else 
+			cout << "-";
+		if(statbuf.st_mode & S_IRUSR)
+			cout << "r";
+		else 
+			cout << "-";
+		if(statbuf.st_mode & S_IWUSR)
+			cout << "w";
+		else 
+			cout << "-";
+		if(statbuf.st_mode & S_IXUSR)
+			cout << "x";
+		else 
+			cout << "-";
+		
+		cout << endl;
+	}
+	else
+	{
+		perror("stat");
+		exit(1);
+	}
 }
-*/
+
 
 void check_dir(const char* dirName, vector<string>& files)
 {
