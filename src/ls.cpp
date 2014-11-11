@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <pwd.h>
+#include <grp.h>
 #include <time.h>
 #include <vector>
 #include <iomanip>
@@ -20,7 +21,7 @@ using namespace std;
 #define FLAG_l 2
 #define FLAG_R 4
 
-bool is_directory(char* path);
+//bool is_directory(char* path);
 void check_modifiers(const char* path);
 void check_dir(const char* path, vector<string>&);
 int find_index(int argc, char** argv);
@@ -28,18 +29,17 @@ int find_index(int argc, char** argv);
 int main(int argc, char** argv)
 {
 	int flags = 0;
-
 	vector<string> files;
 	
-	setlocale(LC_ALL, "en_US.UTF-8");
+	setlocale(LC_ALL, "en_US.UTF-8");  //set locale for time format
 
 	//set flags by iterating through entire command line arguments
 	while (true)
 	{
-        	int c = getopt (argc, argv, "alR");   //sort argv
+        	int c = getopt (argc, argv, "alR");   //sorts flags to front but non flags to back
 		if (c == -1)
 		{
-			break; //reached end
+			break; //reached end of argv
 		}
         	if (c == 'a')
 			flags |= FLAG_a;
@@ -48,14 +48,23 @@ int main(int argc, char** argv)
 		if (c == 'R')
 			flags |= FLAG_R;
      	}
-//	int index = find_index (argc, argv);
+	int index = find_index (argc, argv);
 
 //TODO: check if directory name is provided, otherwise 
 
 //TODO: implement whatever this is which has something to do with hidden files
 	if (flags & FLAG_a)
-	{	
+	{
+//		cout << "dbg index" << index << endl;
 		const char *dirName = ".";
+		if (argv[index] == 0)
+		{
+			dirName = ".";
+		}
+		else
+		{
+			dirName = argv[index];
+		}
 		check_dir(dirName, files);
 		sort(files.begin(), files.end());
 		for (unsigned i = 0; i < files.size(); i++)
@@ -69,8 +78,15 @@ int main(int argc, char** argv)
 	if (flags & FLAG_l)
 	{
 		//need more code here about stuff like passing in the current directory
-		
-		const char *dirName = "/bin";
+		const char *dirName = ".";
+		if (argv[index] == 0)
+		{
+			dirName = ".";
+		}
+		else
+		{
+			dirName = argv[index];
+		}
 		check_modifiers(dirName);
 
 		//additional info like user, machine, additional stuff
@@ -86,7 +102,7 @@ int main(int argc, char** argv)
 //TODO: create a default case where no parameters are given
 
 
-	if ((argv[1] == 0))
+	if ((argv[index-1] == 0))
 	{
 		const char *dirName = ".";
 		check_dir(dirName, files);
@@ -97,7 +113,7 @@ int main(int argc, char** argv)
 			if (files.at(i).at(0) != '.')
 			{
 				//cout << left << setw(11) << files.at(i) ;
-				cout << files.at(i) << "  ";
+				cout << setw(files.at(i).size()) << files.at(i);
 			}
 			/*
 			if (((i % 10) == 0) && (i != 0))
@@ -110,12 +126,6 @@ int main(int argc, char** argv)
 
 
 	return 0;
-}
-
-bool is_directory(char* path)
-{
-	//function to check if a path is a directory or not
-	return true;
 }
 
 
@@ -174,23 +184,15 @@ void check_modifiers(const char* name)
 			cout << "-";
 
 		//more stuff		
-		
-		cout << "  " << statbuf.st_nlink << "  "; //number of symbolic links
-		
+		cout << flush;	
+		cout << setw(4) << left << " " << statbuf.st_nlink << " "; //number of symbolic links
+
+		errno = 0;
 		struct passwd *p;
-		if((p = getpwuid(statbuf.st_uid)) != NULL)
+		p = getpwuid(statbuf.st_uid);
+		if((errno == 0) && (p != NULL))
 		{
-			cout << setw(6) << left << p->pw_name << flush;  //print out username based on UID
-		}
-		else
-		{
-			perror("getpwuid");
-			exit(1);
-		}
-		
-		if((p = getpwuid(statbuf.st_gid)) != NULL)
-		{
-			cout << setw(6) << left << p->pw_name << flush;  //print out group name based on GID
+			cout << setw(6) << left << p->pw_name << " " << flush;  //print out username based on UID
 		}
 		else
 		{
@@ -198,7 +200,19 @@ void check_modifiers(const char* name)
 			exit(1);
 		}
 
-		cout << "  " << statbuf.st_size; //print out size in bytes
+		errno = 0;
+		struct group *g = getgrgid(statbuf.st_gid);
+		if ((errno != 0))
+		{
+			perror("getpwuid");
+			exit(1);
+		}
+		else
+		{
+			cout << setw(6) << left << g->gr_name << flush;  //print out group name based on GID
+		}
+
+		cout << setw(6) << right << statbuf.st_size << "  "; //print out size in bytes
 
 		struct tm *localTime;
 		time_t t = statbuf.st_mtime;
@@ -222,7 +236,7 @@ void check_modifiers(const char* name)
 			exit(1);
 		}
 
-		cout << "  " << name << flush;
+		cout << "  " << name << flush;  //location
 
 		cout << endl;
 	}
