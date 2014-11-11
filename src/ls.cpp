@@ -7,6 +7,8 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <string.h>
+#include <pwd.h>
+#include <time.h>
 #include <vector>
 #include <iomanip>
 #include <algorithm>
@@ -66,7 +68,6 @@ int main(int argc, char** argv)
 		
 		const char *dirName = "/bin";
 		check_modifiers(dirName);
-		
 
 		//additional info like user, machine, additional stuff
 	}
@@ -114,17 +115,19 @@ bool is_directory(char* path)
 }
 
 
-void check_modifiers(const char* dirName)
+void check_modifiers(const char* name)
 {
 	struct stat statbuf;
 	
-	if(stat(dirName, &statbuf) == 0)
+	if(stat(name, &statbuf) == 0)
 	{
 
-		//directory
+		//directory/symbolic link
 		if(S_ISDIR(statbuf.st_mode))
 			cout << "d";
-		else 
+		else if (S_ISLNK(statbuf.st_mode))
+			cout << "l";
+		else
 			cout << "-";
 		//user cluster
 		if(statbuf.st_mode & S_IRUSR)
@@ -166,7 +169,56 @@ void check_modifiers(const char* dirName)
 		else 
 			cout << "-";
 
-		//more stuff			
+		//more stuff		
+		
+		cout << "  " << statbuf.st_nlink << "  "; //number of symbolic links
+		
+		struct passwd *p;
+		if((p = getpwuid(statbuf.st_uid)) != NULL)
+		{
+			cout << setw(6) << left << p->pw_name << flush;  //print out username based on UID
+		}
+		else
+		{
+			perror("getpwuid");
+			exit(1);
+		}
+		
+		if((p = getpwuid(statbuf.st_gid)) != NULL)
+		{
+			cout << setw(6) << left << p->pw_name << flush;  //print out group name based on GID
+		}
+		else
+		{
+			perror("getpwuid");
+			exit(1);
+		}
+
+		cout << "  " << statbuf.st_size; //print out size in bytes
+
+		struct tm *localTime;
+		time_t t = statbuf.st_mtime;
+		if((localTime = localtime(&t)) != NULL)
+		{
+			char timestr[100];
+			if((strftime(timestr, sizeof(timestr), "%b %e %H %M", localTime)) != 0)
+			{
+				cout << " " << timestr << flush;
+			}
+			else	
+			{
+				perror("strftime");
+				exit(1);
+			}
+
+		}
+		else
+		{
+			perror("localtime");
+			exit(1);
+		}
+
+		cout << "  " << name << flush;
 
 		cout << endl;
 	}
