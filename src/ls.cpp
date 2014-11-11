@@ -81,14 +81,17 @@ int main(int argc, char** argv)
 		const char *dirName = ".";
 		if (argv[index] == 0)
 		{
-			dirName = ".";
+			dirName = "./";
 		}
 		else
 		{
 			dirName = argv[index];
 		}
-		check_modifiers(dirName);
-
+		check_dir(dirName, files);
+		for (unsigned i = 0; i < files.size(); i++)
+		{
+			check_modifiers(files.at(i).c_str());
+		}
 		//additional info like user, machine, additional stuff
 	}
 	
@@ -102,9 +105,17 @@ int main(int argc, char** argv)
 //TODO: create a default case where no parameters are given
 
 
-	if ((argv[index-1] == 0))
+	if ((index == 1))
 	{
-		const char *dirName = ".";
+		const char *dirName = "./";
+		if (argv[index] == 0)
+		{
+			dirName = "./";
+		}
+		else
+		{
+			dirName = argv[index];
+		}
 		check_dir(dirName, files);
 		sort(files.begin(), files.end());
 		for (unsigned i = 0; i < files.size(); i++)
@@ -113,13 +124,14 @@ int main(int argc, char** argv)
 			if (files.at(i).at(0) != '.')
 			{
 				//cout << left << setw(11) << files.at(i) ;
-				cout << setw(files.at(i).size()) << files.at(i);
+				cout << setw(files.at(i).size()) << files.at(i) << " " << flush;
 			}
 			/*
 			if (((i % 10) == 0) && (i != 0))
 			{
 				cout << endl;
-			}*/
+			}
+			*/
 		}
 		cout << endl;
 	}
@@ -184,15 +196,15 @@ void check_modifiers(const char* name)
 			cout << "-";
 
 		//more stuff		
-		cout << flush;	
-		cout << setw(4) << left << " " << statbuf.st_nlink << " "; //number of symbolic links
+		cout << " " << flush;	
+		cout << setw(3) << left  << statbuf.st_nlink << flush; //number of symbolic links
 
 		errno = 0;
 		struct passwd *p;
 		p = getpwuid(statbuf.st_uid);
 		if((errno == 0) && (p != NULL))
 		{
-			cout << setw(6) << left << p->pw_name << " " << flush;  //print out username based on UID
+			cout << setw(8) << left << p->pw_name << " " << flush;  //print out username based on UID
 		}
 		else
 		{
@@ -209,10 +221,10 @@ void check_modifiers(const char* name)
 		}
 		else
 		{
-			cout << setw(6) << left << g->gr_name << flush;  //print out group name based on GID
+			cout << setw(8) << left << g->gr_name << flush;  //print out group name based on GID
 		}
 
-		cout << setw(6) << right << statbuf.st_size << "  "; //print out size in bytes
+		cout << setw(sizeof(statbuf.st_size)) << left << statbuf.st_size; //print out size in bytes
 
 		struct tm *localTime;
 		time_t t = statbuf.st_mtime;
@@ -221,7 +233,7 @@ void check_modifiers(const char* name)
 			char timestr[100];
 			if((strftime(timestr, sizeof(timestr), "%b %e %H:%M", localTime)) != 0)
 			{
-				cout << " " << timestr << flush;
+				cout << setw(12) << left << timestr << flush;
 			}
 			else	
 			{
@@ -236,7 +248,7 @@ void check_modifiers(const char* name)
 			exit(1);
 		}
 
-		cout << "  " << name << flush;  //location
+		cout << " " << name << flush;  //location
 
 		cout << endl;
 	}
