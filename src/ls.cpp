@@ -12,6 +12,8 @@
 #include <vector>
 #include <iomanip>
 #include <algorithm>
+#include <clocale>
+#include <ctime>
 using namespace std;
 
 #define FLAG_a 1
@@ -29,6 +31,8 @@ int main(int argc, char** argv)
 
 	vector<string> files;
 	
+	setlocale(LC_ALL, "en_US.UTF-8");
+
 	//set flags by iterating through entire command line arguments
 	while (true)
 	{
@@ -201,7 +205,7 @@ void check_modifiers(const char* name)
 		if((localTime = localtime(&t)) != NULL)
 		{
 			char timestr[100];
-			if((strftime(timestr, sizeof(timestr), "%b %e %H %M", localTime)) != 0)
+			if((strftime(timestr, sizeof(timestr), "%b %e %H:%M", localTime)) != 0)
 			{
 				cout << " " << timestr << flush;
 			}
