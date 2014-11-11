@@ -19,34 +19,30 @@ using namespace std;
 bool is_directory(char* path);
 void check_modifiers(const char* path);
 void check_dir(const char* path, vector<string>&);
+int find_index(int argc, char** argv);
 
 int main(int argc, char** argv)
 {
 	int flags = 0;
+
+	vector<string> files;
 	
 	//set flags by iterating through entire command line arguments
-	for (int i = 1; i < argc; i++)
+	while (true)
 	{
-		if (argv[i][0] == '-')
+        	int c = getopt (argc, argv, "alR");   //sort argv
+		if (c == -1)
 		{
-			for(int j = 1; argv[i][j] != 0; j++)
-			{
-				if (argv[i][j] == 'a')
-					flags |= FLAG_a;
-				if (argv[i][j] == 'l')
-					flags |= FLAG_l;
-				if (argv[i][j] == 'R')
-					flags |= FLAG_R;
-			}
+			break; //reached end
 		}
-		if ((argv[i][0] == '\\') || ((argv[i][0] >= '0') && (argv[i][0] <= 'z')))
-		{
-			//this is a directory or a file
-			;
-		}
-	}
-	
-	vector<string> files;
+        	if (c == 'a')
+			flags |= FLAG_a;
+		if (c == 'l')
+			flags |= FLAG_l;
+		if (c == 'R')
+			flags |= FLAG_R;
+     	}
+//	int index = find_index (argc, argv);
 
 //TODO: check if directory name is provided, otherwise 
 
@@ -216,4 +212,17 @@ void check_dir(const char* dirName, vector<string>& files)
 		}
 	}
 	
+}
+
+int find_index(int argc, char** argv)
+{
+	int index = 1;
+	for (int i = 1; i < argc; ++i)
+	{
+ 		if (argv[i][0] == '-')
+		{
+			index++;
+		}
+	}
+	return index;
 }
