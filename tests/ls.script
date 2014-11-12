@@ -1,0 +1,188 @@
+Script started on Tue 11 Nov 2014 11:16:31 PM PST
+~
+achao008@hammer $ cd Documents/c[KCS`00[K[K[K100/rshell
+~/Documents/CS100/rshell
+achao008@hammer $ src[K[K[Kbin/ls
+LICENSE  Makefile  README.md  bin  src  tests  
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls[Kachao008@hammer $ bin/ls[Kachao008@hammer $ bin/ls /
+C:\nppdf32Log\debuglog.txt  bin  boot  cgroup  class  dev  etc  extra  home  lib  lib64  lost+found  media  misc  mnt  net  opt  proc  root  sbin  selinux  srv  sys  tmp  usr  var  
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls bin
+cp  ls  rshell  
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls blarg
+opendir: No such file or directory
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls ./
+LICENSE  Makefile  README.md  bin  src  tests  
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -a
+.  ..  .git  .gitignore  LICENSE  Makefile  README.md  bin  src  tests  
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -a /
+.  ..  .autofsck  .autorelabel  C:\nppdf32Log\debuglog.txt  bin  boot  cgroup  class  dev  etc  extra  home  lib  lib64  lost+found  media  misc  mnt  net  opt  proc  root  sbin  selinux  srv  sys  tmp  usr  var  
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -a bin
+.  ..  cp  ls  rshell  
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -a blarg
+opendir: No such file or directory
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -a /blarg
+opendir: No such file or directory
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -a ./
+.  ..  .git  .gitignore  LICENSE  Makefile  README.md  bin  src  tests  
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -l
+-rw------- 1  achao008 csmajs  1053    Oct 19 20:02[0m LICENSE[0m
+-rw------- 1  achao008 csmajs  531     Nov 10 13:59[0m Makefile[0m
+-rw------- 1  achao008 csmajs  1047    Nov 11 20:27[0m README.md[0m
+drwx------ 2  achao008 csmajs  4096    Nov 11 23:03[34m bin[0m
+drwx------ 2  achao008 csmajs  4096    Nov 11 23:03[34m src[0m
+drwx------ 2  achao008 csmajs  4096    Nov 11 23:15[34m tests[0m
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -l  /
+-rw-r--r-- 1  root     root    48      Oct  8 05:29[0m C:\nppdf32Log\debuglog.txt[0m
+dr-xr-xr-x 2  root     root    4096    Nov 10 03:48[34m bin[0m
+dr-xr-xr-x 4  root     root    4096    Nov  9 10:55[34m boot[0m
+drwxr-xr-x 2  root     root    4096    Oct 17 16:12[34m cgroup[0m
+drwxr-xr-x 3  root     root    0       Nov 10 07:04[34m class[0m
+drwxr-xr-x 17 root     root    3720    Nov  9 11:11[34m dev[0m
+drwxr-xr-x 118root     root    12288   Nov 11 23:15[34m etc[0m
+drwx------ 2  root     root    4096    Oct 13 23:38[34m extra[0m
+drwxr-xr-x 4  root     root    0       Nov 11 23:12[34m home[0m
+dr-xr-xr-x 12 root     root    4096    Nov 10 03:48[34m lib[0m
+dr-xr-xr-x 9  root     root    12288   Nov 10 03:48[34m lib64[0m
+drwx------ 2  root     root    16384   Sep 18 00:30[34m lost+found[0m
+drwxr-xr-x 2  root     root    4096    Sep 23 04:50[34m media[0m
+drwxr-xr-x 2  root     root    0       Nov  9 11:11[34m misc[0m
+drwxr-xr-x 2  root     root    4096    Sep 23 04:50[34m mnt[0m
+drwxr-xr-x 2  root     root    0       Nov  9 11:11[34m net[0m
+drwxr-xr-x 5  root     root    4096    Oct  8 05:32[34m opt[0m
+dr-xr-xr-x 971root     root    0       Nov  9 03:10[34m proc[0m
+dr-xr-x--- 9  root     root    4096    Nov 10 12:03[34m root[0m
+dr-xr-xr-x 2  root     root    12288   Nov 10 03:48[34m sbin[0m
+drwxr-xr-x 2  root     root    4096    Sep 18 00:31[34m selinux[0m
+drwxr-xr-x 2  root     root    4096    Sep 23 04:50[34m srv[0m
+drwxr-xr-x 13 root     root    0       Nov  9 03:10[34m sys[0m
+drwxrwxrwx 11 root     root    4096    Nov 11 23:18[34m tmp[0m
+drwxr-xr-x 14 root     root    4096    Oct  8 03:55[34m usr[0m
+drwxr-xr-x 21 root     root    4096    Oct  8 05:19[34m var[0m
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -l /[Kbin
+-rwx------ 1  achao008 csmajs  17716   Nov 11 19:35[32m cp[0m
+-rwx------ 1  achao008 csmajs  45588   Nov 11 23:03[32m ls[0m
+-rwx------ 1  achao008 csmajs  46075   Nov 11 19:35[32m rshell[0m
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -l blarg
+opendir: No such file or directory
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -l /blarg
+opendir: No such file or directory
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -al
+drwx------ 6  achao008 csmajs  4096    Nov 11 22:03[34m .[0m
+drwx------ 11 achao008 csmajs  4096    Nov  3 21:53[34m ..[0m
+drwx------ 8  achao008 csmajs  4096    Nov 11 23:14[34m .git[0m
+-rw------- 1  achao008 csmajs  7       Oct 21 23:58[0m .gitignore[0m
+-rw------- 1  achao008 csmajs  1053    Oct 19 20:02[0m LICENSE[0m
+-rw------- 1  achao008 csmajs  531     Nov 10 13:59[0m Makefile[0m
+-rw------- 1  achao008 csmajs  1047    Nov 11 20:27[0m README.md[0m
+drwx------ 2  achao008 csmajs  4096    Nov 11 23:03[34m bin[0m
+drwx------ 2  achao008 csmajs  4096    Nov 11 23:03[34m src[0m
+drwx------ 2  achao008 csmajs  4096    Nov 11 23:15[34m tests[0m
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -al /
+dr-xr-xr-x 27 root     root    4096    Nov  9 11:11[34m .[0m
+dr-xr-xr-x 27 root     root    4096    Nov  9 11:11[34m ..[0m
+-rw-r--r-- 1  root     root    0       Nov  9 11:10[0m .autofsck[0m
+-rw-r--r-- 1  root     root    0       Sep 18 01:14[0m .autorelabel[0m
+-rw-r--r-- 1  root     root    48      Oct  8 05:29[0m C:\nppdf32Log\debuglog.txt[0m
+dr-xr-xr-x 2  root     root    4096    Nov 10 03:48[34m bin[0m
+dr-xr-xr-x 4  root     root    4096    Nov  9 10:55[34m boot[0m
+drwxr-xr-x 2  root     root    4096    Oct 17 16:12[34m cgroup[0m
+drwxr-xr-x 3  root     root    0       Nov 10 07:04[34m class[0m
+drwxr-xr-x 17 root     root    3720    Nov  9 11:11[34m dev[0m
+drwxr-xr-x 118root     root    12288   Nov 11 23:15[34m etc[0m
+drwx------ 2  root     root    4096    Oct 13 23:38[34m extra[0m
+drwxr-xr-x 4  root     root    0       Nov 11 23:12[34m home[0m
+dr-xr-xr-x 12 root     root    4096    Nov 10 03:48[34m lib[0m
+dr-xr-xr-x 9  root     root    12288   Nov 10 03:48[34m lib64[0m
+drwx------ 2  root     root    16384   Sep 18 00:30[34m lost+found[0m
+drwxr-xr-x 2  root     root    4096    Sep 23 04:50[34m media[0m
+drwxr-xr-x 2  root     root    0       Nov  9 11:11[34m misc[0m
+drwxr-xr-x 2  root     root    4096    Sep 23 04:50[34m mnt[0m
+drwxr-xr-x 2  root     root    0       Nov  9 11:11[34m net[0m
+drwxr-xr-x 5  root     root    4096    Oct  8 05:32[34m opt[0m
+dr-xr-xr-x 972root     root    0       Nov  9 03:10[34m proc[0m
+dr-xr-x--- 9  root     root    4096    Nov 10 12:03[34m root[0m
+dr-xr-xr-x 2  root     root    12288   Nov 10 03:48[34m sbin[0m
+drwxr-xr-x 2  root     root    4096    Sep 18 00:31[34m selinux[0m
+drwxr-xr-x 2  root     root    4096    Sep 23 04:50[34m srv[0m
+drwxr-xr-x 13 root     root    0       Nov  9 03:10[34m sys[0m
+drwxrwxrwx 11 root     root    4096    Nov 11 23:19[34m tmp[0m
+drwxr-xr-x 14 root     root    4096    Oct  8 03:55[34m usr[0m
+drwxr-xr-x 21 root     root    4096    Oct  8 05:19[34m var[0m
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls bin
+cp  ls  rshell  
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -al bin
+drwx------ 2  achao008 csmajs  4096    Nov 11 23:03[34m .[0m
+drwx------ 6  achao008 csmajs  4096    Nov 11 22:03[34m ..[0m
+-rwx------ 1  achao008 csmajs  17716   Nov 11 19:35[32m cp[0m
+-rwx------ 1  achao008 csmajs  45588   Nov 11 23:03[32m ls[0m
+-rwx------ 1  achao008 csmajs  46075   Nov 11 19:35[32m rshell[0m
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -a -l bin
+drwx------ 2  achao008 csmajs  4096    Nov 11 23:03[34m .[0m
+drwx------ 6  achao008 csmajs  4096    Nov 11 22:03[34m ..[0m
+-rwx------ 1  achao008 csmajs  17716   Nov 11 19:35[32m cp[0m
+-rwx------ 1  achao008 csmajs  45588   Nov 11 23:03[32m ls[0m
+-rwx------ 1  achao008 csmajs  46075   Nov 11 19:35[32m rshell[0m
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls bin -l -a bin
+drwx------ 2  achao008 csmajs  4096    Nov 11 23:03[34m .[0m
+drwx------ 6  achao008 csmajs  4096    Nov 11 22:03[34m ..[0m
+-rwx------ 1  achao008 csmajs  17716   Nov 11 19:35[32m cp[0m
+-rwx------ 1  achao008 csmajs  45588   Nov 11 23:03[32m ls[0m
+-rwx------ 1  achao008 csmajs  46075   Nov 11 19:35[32m rshell[0m
+~/Documents/CS100/rshell
+achao008@hammer $ bin/ls -a / -l
+dr-xr-xr-x 27 root     root    4096    Nov  9 11:11[34m .[0m
+dr-xr-xr-x 27 root     root    4096    Nov  9 11:11[34m ..[0m
+-rw-r--r-- 1  root     root    0       Nov  9 11:10[0m .autofsck[0m
+-rw-r--r-- 1  root     root    0       Sep 18 01:14[0m .autorelabel[0m
+-rw-r--r-- 1  root     root    48      Oct  8 05:29[0m C:\nppdf32Log\debuglog.txt[0m
+dr-xr-xr-x 2  root     root    4096    Nov 10 03:48[34m bin[0m
+dr-xr-xr-x 4  root     root    4096    Nov  9 10:55[34m boot[0m
+drwxr-xr-x 2  root     root    4096    Oct 17 16:12[34m cgroup[0m
+drwxr-xr-x 3  root     root    0       Nov 10 07:04[34m class[0m
+drwxr-xr-x 17 root     root    3720    Nov  9 11:11[34m dev[0m
+drwxr-xr-x 118root     root    12288   Nov 11 23:15[34m etc[0m
+drwx------ 2  root     root    4096    Oct 13 23:38[34m extra[0m
+drwxr-xr-x 4  root     root    0       Nov 11 23:12[34m home[0m
+dr-xr-xr-x 12 root     root    4096    Nov 10 03:48[34m lib[0m
+dr-xr-xr-x 9  root     root    12288   Nov 10 03:48[34m lib64[0m
+drwx------ 2  root     root    16384   Sep 18 00:30[34m lost+found[0m
+drwxr-xr-x 2  root     root    4096    Sep 23 04:50[34m media[0m
+drwxr-xr-x 2  root     root    0       Nov  9 11:11[34m misc[0m
+drwxr-xr-x 2  root     root    4096    Sep 23 04:50[34m mnt[0m
+drwxr-xr-x 2  root     root    0       Nov  9 11:11[34m net[0m
+drwxr-xr-x 5  root     root    4096    Oct  8 05:32[34m opt[0m
+dr-xr-xr-x 962root     root    0       Nov  9 03:10[34m proc[0m
+dr-xr-x--- 9  root     root    4096    Nov 10 12:03[34m root[0m
+dr-xr-xr-x 2  root     root    12288   Nov 10 03:48[34m sbin[0m
+drwxr-xr-x 2  root     root    4096    Sep 18 00:31[34m selinux[0m
+drwxr-xr-x 2  root     root    4096    Sep 23 04:50[34m srv[0m
+drwxr-xr-x 13 root     root    0       Nov  9 03:10[34m sys[0m
+drwxrwxrwx 11 root     root    4096    Nov 11 23:20[34m tmp[0m
+drwxr-xr-x 14 root     root    4096    Oct  8 03:55[34m usr[0m
+drwxr-xr-x 21 root     root    4096    Oct  8 05:19[34m var[0m
+~/Documents/CS100/rshell
+achao008@hammer $ exit
+exit
+
+Script done on Tue 11 Nov 2014 11:21:24 PM PST
