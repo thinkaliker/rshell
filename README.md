@@ -42,10 +42,13 @@ This is a custom made ls program.
 
 #### Features
 
-TODO ADD STUFF HERE
+- `ls -a` by itself or with any parameters
+- `ls -l` by itself or with any parameters
 
 #### Bugs
 
-TODO ADD STUFF HERE
+- cannot use `ls -l ~` or `ls -l ~/`, variations such as `ls -l ~/Documents` works fine
+- cannot use `ls -R` by itself or combined
+
 
 * * *
