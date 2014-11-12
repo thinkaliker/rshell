@@ -22,9 +22,10 @@ using namespace std;
 #define FLAG_R 4
 
 //bool is_directory(char* path);
-void check_modifiers(const char* path);
+void check_modifiers(const char* path, const char* name);
 void check_dir(const char* path, vector<string>&);
 int find_index(int argc, char** argv);
+void print_files(vector<string>, int start, bool hidden);
 
 int main(int argc, char** argv)
 {
@@ -59,28 +60,6 @@ int main(int argc, char** argv)
 		const char *dirName = ".";
 		if (argv[index] == 0)
 		{
-			dirName = ".";
-		}
-		else
-		{
-			dirName = argv[index];
-		}
-		check_dir(dirName, files);
-		sort(files.begin(), files.end());
-		for (unsigned i = 0; i < files.size(); i++)
-		{
-			cout << files[i] << "  ";
-		}
-		cout << endl;
-		
-	}
-//TODO: implement the detailed list case with the drwx items using statbuf and .st_mode
-	if (flags & FLAG_l)
-	{
-		//need more code here about stuff like passing in the current directory
-		const char *dirName = ".";
-		if (argv[index] == 0)
-		{
 			dirName = "./";
 		}
 		else
@@ -88,9 +67,73 @@ int main(int argc, char** argv)
 			dirName = argv[index];
 		}
 		check_dir(dirName, files);
+		sort(files.begin(), files.end());
+		print_files(files, 0, true);
+		cout << endl;
+		
+	}
+//TODO: implement the detailed list case with the drwx items using statbuf and .st_mode
+	if (flags & FLAG_l)
+	{
+		//need more code here about stuff like passing in the current directory
+		int relative = 0;
+		const char *dirName = "./";
+		if (argv[index] == 0)
+		{
+			dirName = "./";
+			cout << "nname: " << dirName << endl;
+			relative = 1;
+		}
+		else if (argv[index][0] != '/')
+		{
+			dirName = argv[index];
+			cout << "rname: " << dirName << endl;
+			relative = 2;
+		}
+		else
+		{
+			dirName = argv[index];
+			cout << "name: " << dirName << endl;
+			relative = false;
+		}
+//		cout << "dir: " << dirName << endl;
+		check_dir(dirName, files);
+		sort(files.begin(), files.end());
 		for (unsigned i = 0; i < files.size(); i++)
 		{
-			check_modifiers(files.at(i).c_str());
+			if (relative == 1)
+			{
+				const char *name = files.at(i).c_str();
+				check_modifiers(name, name);
+			}
+			else if (relative == 2)
+			{
+				const char *name = files.at(i).c_str();
+				char *modname = new char[sizeof(files.at(i).c_str()) + 8];
+				strcpy(modname, "./");
+				strcat(modname, name);
+				strcat(modname, "\0");
+				check_modifiers(modname, name);
+				delete[] modname;
+			}
+			else
+			{
+				const char *name = files.at(i).c_str();
+	//			char *modname = argv[index];
+	//			modname = strcat(modname, name);
+				const char *arg = argv[index];
+				
+				char *modname = new char[sizeof(files.at(i).c_str()) + sizeof(argv[index]) + 32];
+				//char *modarg = new char[sizeof(files.at(i).c_str()) + sizeof(argv[index]) + 1];
+				strcpy(modname, arg);
+				strcat(modname, "/");
+				strcat(modname, name);
+				strcat(modname, "\0");
+	//				cout << "modname: " << modname << endl << flush;
+				check_modifiers(modname, name);
+				delete[] modname;
+				//delete[] modarg;
+			}
 		}
 		//additional info like user, machine, additional stuff
 	}
@@ -116,15 +159,36 @@ int main(int argc, char** argv)
 		{
 			dirName = argv[index];
 		}
+
 		check_dir(dirName, files);
 		sort(files.begin(), files.end());
+		print_files(files, 0, false);
+	}
+
+
+
+	return 0;
+}
+
+
+void print_files(vector<string> files, int start, bool hidden)
+{
+	if (hidden)
+	{
+
+		for (unsigned i = start; i < files.size(); i++)
+		{
+			cout << setw(files.at(i).size()) << files[i] << "  ";
+		}
+	}
+	else
+	{	
 		for (unsigned i = 0; i < files.size(); i++)
 		{
 			
 			if (files.at(i).at(0) != '.')
 			{
-				//cout << left << setw(11) << files.at(i) ;
-				cout << setw(files.at(i).size()) << files.at(i) << " " << flush;
+				cout << setw(files.at(i).size()) << files.at(i) << "  " << flush;
 			}
 			/*
 			if (((i % 10) == 0) && (i != 0))
@@ -133,24 +197,34 @@ int main(int argc, char** argv)
 			}
 			*/
 		}
-		cout << endl;
 	}
+	cout << endl;
 
-
-	return 0;
+	
 }
 
-
-void check_modifiers(const char* name)
+void check_modifiers(const char* name, const char* realname)
 {
 	struct stat statbuf;
-	
-	if(stat(name, &statbuf) == 0)
+	int color = 0;
+	errno = 0;
+//	cout << argv[index][0] << endl;
+//	if ((argv[index][0] == '/') && (argv[index] != NULL))
+//	{
+//		char* modname = argv[index];
+//		name = strcat(modname, name);
+//	}
+//	cout << "name: " << name <<endl <<flush;
+	stat(name, &statbuf);
+	if(errno == 0)
 	{
 
 		//directory/symbolic link
 		if(S_ISDIR(statbuf.st_mode))
+		{
 			cout << "d";
+			color = 1;		//directory
+		}
 		else if (S_ISLNK(statbuf.st_mode))
 			cout << "l";
 		else
@@ -165,7 +239,10 @@ void check_modifiers(const char* name)
 		else 
 			cout << "-";
 		if(statbuf.st_mode & S_IXUSR)
+		{
 			cout << "x";
+			color = 2;		//executeable
+		}
 		else 
 			cout << "-";
 		//group cluster
@@ -178,7 +255,10 @@ void check_modifiers(const char* name)
 		else 
 			cout << "-";
 		if(statbuf.st_mode & S_IXGRP)
-			cout << "x";
+		{
+			cout << "x";		//executeable
+			color = 2;
+		}
 		else 
 			cout << "-";
 		//other cluster
@@ -248,7 +328,21 @@ void check_modifiers(const char* name)
 			exit(1);
 		}
 
-		cout << " " << name << flush;  //location
+		if (color == 1)
+		{
+			cout << "\x1b[32m"; //green
+		}
+		else if (color == 2)
+		{
+			cout << "\x1b[34m"; //blue
+		}
+		else
+		{
+			cout << "\x1b[0m"; //reset
+		}
+	//	if (argv[index][0] == '/')
+	//		name++; //remove leading "/"
+		cout << " " << realname << "\x1b[0m" << flush;  //location
 
 		cout << endl;
 	}
@@ -270,10 +364,10 @@ void check_dir(const char* dirName, vector<string>& files)
 	}
 	else
 	{
-		errno = 0;
 		dirent *direntp;
 		while (true)
 		{
+			errno = 0;
 			if ((direntp = readdir(dirp)) != 0)
 			{
 //				cout << direntp->d_name << endl;
@@ -282,8 +376,8 @@ void check_dir(const char* dirName, vector<string>& files)
 			}
 			if(errno != 0)
 			{
-			perror("readdir");
-			exit(1);
+				perror("readdir");
+				exit(1);
 			}
 			break;
 		}
