@@ -22,7 +22,7 @@ using namespace std;
 #define FLAG_R 4
 
 //bool is_directory(char* path);
-void check_modifiers(const char* path, const char* name);
+void check_modifiers(const char* path, const char* name, bool hidden);
 void check_dir(const char* path, vector<string>&);
 int find_index(int argc, char** argv);
 void print_files(vector<string>, int start, bool hidden);
@@ -78,22 +78,29 @@ int main(int argc, char** argv)
 		//need more code here about stuff like passing in the current directory
 		int relative = 0;
 		const char *dirName = "./";
+		char *moddir = new char[sizeof(argv[index]) + 8];
 		if (argv[index] == 0)
 		{
 			dirName = "./";
-			cout << "nname: " << dirName << endl;
+//			cout << "nname: " << dirName << endl;
 			relative = 1;
 		}
 		else if (argv[index][0] != '/')
 		{
-			dirName = argv[index];
-			cout << "rname: " << dirName << endl;
+			const char *dir = argv[index];
+//			char *moddir = new char[sizeof(argv[index]) + 8];
+			strcpy(moddir, "./");
+			strcat(moddir, dir);
+			strcat(moddir, "\0");
+			dirName = moddir;
+//			cout << "rname: " << dirName << endl;
 			relative = 2;
+			//delete[] moddir;
 		}
 		else
 		{
 			dirName = argv[index];
-			cout << "name: " << dirName << endl;
+//			cout << "name: " << dirName << endl;
 			relative = false;
 		}
 //		cout << "dir: " << dirName << endl;
@@ -101,24 +108,23 @@ int main(int argc, char** argv)
 		sort(files.begin(), files.end());
 		for (unsigned i = 0; i < files.size(); i++)
 		{
+			const char *name = files.at(i).c_str();
 			if (relative == 1)
 			{
-				const char *name = files.at(i).c_str();
-				check_modifiers(name, name);
+				check_modifiers(name, name, 0);
 			}
 			else if (relative == 2)
 			{
-				const char *name = files.at(i).c_str();
-				char *modname = new char[sizeof(files.at(i).c_str()) + 8];
-				strcpy(modname, "./");
+				char *modname = new char[sizeof(files.at(i).c_str()) + sizeof(argv[index]) + 32];
+				strcpy(modname, dirName);
+				strcat(modname, "/");
 				strcat(modname, name);
 				strcat(modname, "\0");
-				check_modifiers(modname, name);
+				check_modifiers(modname, name, 0);
 				delete[] modname;
 			}
 			else
 			{
-				const char *name = files.at(i).c_str();
 	//			char *modname = argv[index];
 	//			modname = strcat(modname, name);
 				const char *arg = argv[index];
@@ -130,11 +136,12 @@ int main(int argc, char** argv)
 				strcat(modname, name);
 				strcat(modname, "\0");
 	//				cout << "modname: " << modname << endl << flush;
-				check_modifiers(modname, name);
+				check_modifiers(modname, name, 0);
 				delete[] modname;
 				//delete[] modarg;
 			}
 		}
+		delete[] moddir;
 		//additional info like user, machine, additional stuff
 	}
 	
@@ -187,6 +194,7 @@ void print_files(vector<string> files, int start, bool hidden)
 		{
 			
 			if (files.at(i).at(0) != '.')
+
 			{
 				cout << setw(files.at(i).size()) << files.at(i) << "  " << flush;
 			}
@@ -203,10 +211,11 @@ void print_files(vector<string> files, int start, bool hidden)
 	
 }
 
-void check_modifiers(const char* name, const char* realname)
+void check_modifiers(const char* name, const char* realname, bool hidden)
 {
 	struct stat statbuf;
-	int color = 0;
+	bool isdir = false;
+	bool isexec = false;
 	errno = 0;
 //	cout << argv[index][0] << endl;
 //	if ((argv[index][0] == '/') && (argv[index] != NULL))
@@ -214,148 +223,161 @@ void check_modifiers(const char* name, const char* realname)
 //		char* modname = argv[index];
 //		name = strcat(modname, name);
 //	}
-//	cout << "name: " << name <<endl <<flush;
-	stat(name, &statbuf);
-	if(errno == 0)
+//	cout << "name: " << name << "realname: " << realname << endl <<flush;
+//
+
+	if (realname[0] != '.')
 	{
+		stat(name, &statbuf);
+		if(errno == 0)
+		{
 
-		//directory/symbolic link
-		if(S_ISDIR(statbuf.st_mode))
-		{
-			cout << "d";
-			color = 1;		//directory
-		}
-		else if (S_ISLNK(statbuf.st_mode))
-			cout << "l";
-		else
-			cout << "-";
-		//user cluster
-		if(statbuf.st_mode & S_IRUSR)
-			cout << "r";
-		else 
-			cout << "-";
-		if(statbuf.st_mode & S_IWUSR)
-			cout << "w";
-		else 
-			cout << "-";
-		if(statbuf.st_mode & S_IXUSR)
-		{
-			cout << "x";
-			color = 2;		//executeable
-		}
-		else 
-			cout << "-";
-		//group cluster
-		if(statbuf.st_mode & S_IRGRP)
-			cout << "r";
-		else 
-			cout << "-";
-		if(statbuf.st_mode & S_IWGRP)
-			cout << "w";
-		else 
-			cout << "-";
-		if(statbuf.st_mode & S_IXGRP)
-		{
-			cout << "x";		//executeable
-			color = 2;
-		}
-		else 
-			cout << "-";
-		//other cluster
-		if(statbuf.st_mode & S_IROTH)
-			cout << "r";
-		else 
-			cout << "-";
-		if(statbuf.st_mode & S_IWOTH)
-			cout << "w";
-		else 
-			cout << "-";
-		if(statbuf.st_mode & S_IXOTH)
-			cout << "x";
-		else 
-			cout << "-";
-
-		//more stuff		
-		cout << " " << flush;	
-		cout << setw(3) << left  << statbuf.st_nlink << flush; //number of symbolic links
-
-		errno = 0;
-		struct passwd *p;
-		p = getpwuid(statbuf.st_uid);
-		if((errno == 0) && (p != NULL))
-		{
-			cout << setw(8) << left << p->pw_name << " " << flush;  //print out username based on UID
-		}
-		else
-		{
-			perror("getpwuid");
-			exit(1);
-		}
-
-		errno = 0;
-		struct group *g = getgrgid(statbuf.st_gid);
-		if ((errno != 0))
-		{
-			perror("getpwuid");
-			exit(1);
-		}
-		else
-		{
-			cout << setw(8) << left << g->gr_name << flush;  //print out group name based on GID
-		}
-
-		cout << setw(sizeof(statbuf.st_size)) << left << statbuf.st_size; //print out size in bytes
-
-		struct tm *localTime;
-		time_t t = statbuf.st_mtime;
-		if((localTime = localtime(&t)) != NULL)
-		{
-			char timestr[100];
-			if((strftime(timestr, sizeof(timestr), "%b %e %H:%M", localTime)) != 0)
+			//directory/symbolic link
+			if(S_ISDIR(statbuf.st_mode))
 			{
-				cout << setw(12) << left << timestr << flush;
+				cout << "d";
+				isdir = true;		//directory
 			}
-			else	
+			else if (S_ISLNK(statbuf.st_mode))
+				cout << "l";
+			else
+				cout << "-";
+			//user cluster
+			if(statbuf.st_mode & S_IRUSR)
+				cout << "r";
+			else 
+				cout << "-";
+			if(statbuf.st_mode & S_IWUSR)
+				cout << "w";
+			else 
+				cout << "-";
+			if(statbuf.st_mode & S_IXUSR)
 			{
-				perror("strftime");
+				cout << "x";
+				isexec = true;		//executeable
+			}
+			else 
+				cout << "-";
+			//group cluster
+			if(statbuf.st_mode & S_IRGRP)
+				cout << "r";
+			else 
+				cout << "-";
+			if(statbuf.st_mode & S_IWGRP)
+				cout << "w";
+			else 
+				cout << "-";
+			if(statbuf.st_mode & S_IXGRP)
+			{
+				cout << "x";		//executeable
+				isexec = true;
+			}
+			else 
+				cout << "-";
+			//other cluster
+			if(statbuf.st_mode & S_IROTH)
+				cout << "r";
+			else 
+				cout << "-";
+			if(statbuf.st_mode & S_IWOTH)
+				cout << "w";
+			else 
+				cout << "-";
+			if(statbuf.st_mode & S_IXOTH)
+			{
+				cout << "x";
+				isexec = true;
+			}
+			else 
+				cout << "-";
+
+			//more stuff		
+			cout << " " << flush;	
+			cout << setw(3) << left  << statbuf.st_nlink << flush; //number of symbolic links
+
+			errno = 0;
+			struct passwd *p;
+			p = getpwuid(statbuf.st_uid);
+			if((errno == 0) && (p != NULL))
+			{
+				cout << setw(8) << left << p->pw_name << " " << flush;  //print out username based on UID
+			}
+			else
+			{
+				perror("getpwuid");
 				exit(1);
 			}
 
+			errno = 0;
+			struct group *g = getgrgid(statbuf.st_gid);
+			if ((errno != 0))
+			{
+				perror("getpwuid");
+				exit(1);
+			}
+			else
+			{
+				cout << setw(8) << left << g->gr_name << flush;  //print out group name based on GID
+			}
+
+			cout << setw(sizeof(statbuf.st_size)) << left << statbuf.st_size; //print out size in bytes
+
+			struct tm *localTime;
+			time_t t = statbuf.st_mtime;
+			if((localTime = localtime(&t)) != NULL)
+			{
+				char timestr[100];
+				if((strftime(timestr, sizeof(timestr), "%b %e %H:%M", localTime)) != 0)
+				{
+					cout << setw(12) << left << timestr << flush;
+				}
+				else	
+				{
+					perror("strftime");
+					exit(1);
+				}
+
+			}
+			else
+			{
+				perror("localtime");
+				exit(1);
+			}
+
+			if (isdir)
+			{
+				cout << "\x1b[34m"; //blue - folder
+			}
+			else if (isexec)
+			{
+				cout << "\x1b[32m"; //green - exec
+			}
+			else
+			{
+				cout << "\x1b[0m"; //reset
+			}
+		//	if (argv[index][0] == '/')
+		//		name++; //remove leading "/"
+			cout << " " << realname << "\x1b[0m" << flush;  //location
+
+			cout << endl;
 		}
 		else
 		{
-			perror("localtime");
+			perror("stat");
 			exit(1);
 		}
-
-		if (color == 1)
-		{
-			cout << "\x1b[32m"; //green
-		}
-		else if (color == 2)
-		{
-			cout << "\x1b[34m"; //blue
-		}
-		else
-		{
-			cout << "\x1b[0m"; //reset
-		}
-	//	if (argv[index][0] == '/')
-	//		name++; //remove leading "/"
-		cout << " " << realname << "\x1b[0m" << flush;  //location
-
-		cout << endl;
 	}
 	else
 	{
-		perror("stat");
-		exit(1);
+		//do nothing and continue
 	}
 }
 
 
 void check_dir(const char* dirName, vector<string>& files)
 {
+//	cout << "check_dir: " << dirName << endl;
 	DIR *dirp = opendir(dirName);
 	if ((dirp == 0))
 	{
