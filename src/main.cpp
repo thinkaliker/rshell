@@ -123,7 +123,7 @@ int cmd_interpreter(string input, char** argv)
 		{
 			perror("execvp"); // throw an error
 			exit(1);
-			return error;
+			//return error;
 		}
 		else
 		{
@@ -133,7 +133,11 @@ int cmd_interpreter(string input, char** argv)
 	else
 	{
 		//parent wait
-		waitpid(-1, NULL, 0);
+		if (waitpid(-1, NULL, 0) == -1)
+		{
+			perror("waitpid");
+			exit(1);
+		}
 	}
 
 	return 0;
