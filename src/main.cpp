@@ -17,7 +17,7 @@ using namespace std;
 using namespace boost;
 
 string shell_prompt(); //prototype for prompt function
-int cmd_interpreter(string, char**); //prototype for command interpreter
+int cmd_interpreter(string);//, char**); //prototype for command interpreter
 
 int main (int argc, char** argv)
 {
@@ -40,34 +40,35 @@ int main (int argc, char** argv)
 			tokenizer< char_separator<char> > tokens(input, sep);
 			BOOST_FOREACH(t, tokens);
 			{
-				//TODO do different things depending on delimiters in vector
-				//inVector.push_back(t);
-		//		for(unsigned i = 0; i < inVector.size() - 1; i++)
-		//		{
-				//	cerr << inVector.at(i) << endl;
-					if (t != "#"|| t.at(0) != '#')
-					{
-					//	for (unsigned k = inVector.size(); k < inVector.size() ; k--)
-							inVector.push_back(t); 
-					}
-		//			else
-		//			{
-						
-		//			}
-		//		}
-			}
+			//TODO do different things depending on delimiters in vector
+			//inVector.push_back(t);
+			//for(unsigned i = 0; i < inVector.size() - 1; i++)
+			//{
+			//	cerr << inVector.at(i) << endl;
+				if (t != "#"|| t.at(0) != '#')
+				{
+				//for (unsigned k = inVector.size(); k < inVector.size() ; k--)
+						inVector.push_back(t); 
+				}
+			//	else
+			//	{
 					
-		//	cerr << inVector.back() << endl;
+			//	}
+			//}
+			//}
+					
+			//cerr << inVector.back() << endl;
 			string in = inVector.at(inVector.size() - 1);
-			cmd_interpreter(in, argv);
 			
+			cmd_interpreter(in);
+			}
 		}
 	}
 
 	return 0;
 }
 
-int cmd_interpreter(string input, char** argv)
+int cmd_interpreter(string input)//, char** argv)
 {
 //	unsigned size = input.size();
 //	string cmd = input.back();
@@ -77,7 +78,7 @@ int cmd_interpreter(string input, char** argv)
 
 //	vector<string> strs;
 
-//	cout << "last " << input.back() << endl;
+//	cout << "input: " << input << endl;
 //	for (unsigned i = 0; i < size ; i++)
 //		cout << "test " << input.at(i) << endl;
 
@@ -111,24 +112,30 @@ int cmd_interpreter(string input, char** argv)
 	
 	//fork execution to it's own process
 //	char** cmd[];
-		
-	strcpy(argv[0], input.c_str());
-	strcat(argv[0], "\0");
+	
+	int len = input.length();
+	char* cinput = new char[len+1];
+	input.copy(input, len, 0);
+	cinput[len]='\0';
+	tokenizer<> tok(cinput);
+
+//	strcpy(argv[0], input.c_str());
+//	strcat(argv[0], "\0");
 	//cerr << argv[0] << endl;
 	int pid = fork();
 	if(pid == 0)
 	{
-		int error = execvp(argv[0], argv);
-		if (error == -1)
+//		int error = execvp(argv[0], argv);
+		if (execvp(cinput[0], cinput) == -1)
 		{
 			perror("execvp"); // throw an error
 			exit(1);
 			//return error;
 		}
-		else
-		{
-			execvp(argv[0], argv);
-		}
+		//else
+		//{
+	//		execvp(argv[0], argv);
+	//	}
 	}
 	else
 	{
