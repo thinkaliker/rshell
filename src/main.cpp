@@ -38,7 +38,7 @@ int main (int argc, char** argv)
 			char_separator<char> sep(";|&#");
 			string t;
 			tokenizer< char_separator<char> > tokens(input, sep);
-			BOOST_FOREACH(t, tokens);
+			BOOST_FOREACH(t, tokens)
 			{
 			//TODO do different things depending on delimiters in vector
 			//inVector.push_back(t);
@@ -70,54 +70,32 @@ int main (int argc, char** argv)
 
 int cmd_interpreter(string input)//, char** argv)
 {
-//	unsigned size = input.size();
-//	string cmd = input.back();
-// 	string file;
-//	int len = input.length() + 1;
-//	char* param;
-
-//	vector<string> strs;
-
-//	cout << "input: " << input << endl;
-//	for (unsigned i = 0; i < size ; i++)
-//		cout << "test " << input.at(i) << endl;
 
 	//parse command to seperate command and parameters
-	
-//	split(strs, input, is_any_of(" "));
-//	file = strs.front();
-	
-//	for (unsigned i = 1; i < strs.size(); i++)
-//	{
-//		param.append(strs.at(i));
-//	}
-//	param.append('\0'); //null termination
-//	const char* filec = file.c_str();
-//	const char* paramc = param.c_str();
 
-//	file = strs.front();
-//	cout << "file:" << file << endl;
+	//int len = input.length();
 	
-	
-//	char paramc[len+1];
-//	char* const charc = new  [file.length()];
-//	for (int i = 0; i != len; i++)
-//	{
-//		if (i == len)
-//		{
-//			paramc[i] = '\0';
-//		}
-//		paramc[i] =  strs.at(i).c_str();
-//	}
-	
-	//fork execution to it's own process
-//	char** cmd[];
-	
-	int len = input.length();
-	char* cinput = new char[len+1];
-	input.copy(input, len, 0);
-	cinput[len]='\0';
-	tokenizer<> tok(cinput);
+	vector<string> invector;
+	string t;
+	char_separator<char> sep(" ");
+	tokenizer< char_separator<char> > tokens(input, sep);
+	//int i = 0;
+	BOOST_FOREACH(t, tokens)
+	{
+		invector.push_back(t);
+	}
+	unsigned len = invector.size();	
+
+	const char** cinput = new const char*[len+2];
+	const char* program = invector.at(0).c_str();
+
+	cinput[0] = program;
+
+	for(unsigned i = 0; i < 1 + len; i++)
+	{
+		cinput[i+1] = invector[i].c_str();
+	}
+	cinput[len] = '\0';
 
 //	strcpy(argv[0], input.c_str());
 //	strcat(argv[0], "\0");
@@ -126,7 +104,7 @@ int cmd_interpreter(string input)//, char** argv)
 	if(pid == 0)
 	{
 //		int error = execvp(argv[0], argv);
-		if (execvp(cinput[0], cinput) == -1)
+		if (execvp(cinput[0],(char**)cinput) == -1)
 		{
 			perror("execvp"); // throw an error
 			exit(1);
