@@ -91,9 +91,9 @@ int cmd_interpreter(string input)//, char** argv)
 
 	cinput[0] = program;
 
-	for(unsigned i = 0; i < 1 + len; i++)
+	for(unsigned i = 1; i < 1 + len; i++)
 	{
-		cinput[i+1] = invector[i].c_str();
+		cinput[i] = invector[i].c_str();
 	}
 	cinput[len] = '\0';
 
@@ -104,7 +104,7 @@ int cmd_interpreter(string input)//, char** argv)
 	if(pid == 0)
 	{
 //		int error = execvp(argv[0], argv);
-		if (execvp(cinput[0],(char**)cinput) == -1)
+		if (execvp(program,(char**)cinput) == -1)
 		{
 			perror("execvp"); // throw an error
 			exit(1);
