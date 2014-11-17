@@ -9,6 +9,7 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/utsname.h>
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
@@ -40,27 +41,25 @@ int main (int argc, char** argv)
 			tokenizer< char_separator<char> > tokens(input, sep);
 			BOOST_FOREACH(t, tokens)
 			{
-			//TODO do different things depending on delimiters in vector
-			//inVector.push_back(t);
-			//for(unsigned i = 0; i < inVector.size() - 1; i++)
-			//{
-			//	cerr << inVector.at(i) << endl;
+				//TODO do different things depending on delimiters in vector
+				//inVector.push_back(t);
+				//for(unsigned i = 0; i < inVector.size() - 1; i++)
+				//{
+				//	cerr << inVector.at(i) << endl;
 				if (t != "#"|| t.at(0) != '#')
 				{
 				//for (unsigned k = inVector.size(); k < inVector.size() ; k--)
-						inVector.push_back(t); 
+					inVector.push_back(t); 
+				//}
+				//	else
+				//	{
+				//}
+					
+				//cerr << inVector.back() << endl;
+					string in = inVector.at(inVector.size() - 1);
+				
+					cmd_interpreter(in);
 				}
-			//	else
-			//	{
-					
-			//	}
-			//}
-			//}
-					
-			//cerr << inVector.back() << endl;
-			string in = inVector.at(inVector.size() - 1);
-			
-			cmd_interpreter(in);
 			}
 		}
 	}
@@ -70,7 +69,6 @@ int main (int argc, char** argv)
 
 int cmd_interpreter(string input)//, char** argv)
 {
-
 	//parse command to seperate command and parameters
 
 	//int len = input.length();
@@ -80,7 +78,7 @@ int cmd_interpreter(string input)//, char** argv)
 	char_separator<char> sep(" ");
 	tokenizer< char_separator<char> > tokens(input, sep);
 	//int i = 0;
-	BOOST_FOREACH(t, tokens)
+	BOOST_FOREACH(t, tokens)		//tokenize input string with flags to seperate items
 	{
 		invector.push_back(t);
 	}
@@ -104,7 +102,7 @@ int cmd_interpreter(string input)//, char** argv)
 	if(pid == 0)
 	{
 //		int error = execvp(argv[0], argv);
-		if (execvp(program,(char**)cinput) == -1)
+		if (execvp(program, (char**)cinput) == -1)
 		{
 			perror("execvp"); // throw an error
 			exit(1);
@@ -112,8 +110,8 @@ int cmd_interpreter(string input)//, char** argv)
 		}
 		//else
 		//{
-	//		execvp(argv[0], argv);
-	//	}
+		//	execvp(argv[0], argv);
+		//}
 	}
 	else
 	{
@@ -134,6 +132,10 @@ string shell_prompt()
 	string in;
 	//TODO - error checking for getlogin and gethostname
 	//implement later
+//	struct utsname name;
+//	errno = 0;
+
+//	uname(&name)
 	/*
 	char name[256];
 	int maxlen = 64;
