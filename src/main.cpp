@@ -35,26 +35,19 @@ int main (int argc, char** argv)
 		}
 		else
 		{
-			char_separator<char> sep(";", "|&#");
+			char_separator<char> sep(";", "|&#<>");
 			string t;
 			tokenizer< char_separator<char> > tokens(input, sep);
 			BOOST_FOREACH(t, tokens)
 			{
 				//TODO do different things depending on delimiters in vector
-				//inVector.push_back(t);
-				//for(unsigned i = 0; i < inVector.size() - 1; i++)
-				//{
-				//	cerr << inVector.at(i) << endl;
-//				if (t != "#"|| t.at(0) != '#')
-				{
-				//for (unsigned k = inVector.size(); k < inVector.size() ; k--)
-					inVector.push_back(t); 
-				}
+				inVector.push_back(t); 
 			} //end BOOST_FOREACH
 			
 			bool comment_sentinel = true;
+			bool pipe_sentinel = false;
 
-			for (unsigned i = 0; i < inVector.size(); i++)
+			for (unsigned i = 0; i < inVector.size(); i++) //go through vector of commands - looking for comments, pipes, redirections
 			{
 				if(comment_sentinel)	//if a comment sign is not found, execute
 				{
@@ -62,12 +55,44 @@ int main (int argc, char** argv)
 					if (in.at(0) == '#')
 					{
 						comment_sentinel = false;
+						continue;
 					}
-					else
+
+					if (in.at(0) == '&')
 					{
-						cmd_interpreter(in);
+						//TODO: remove later and fix
+						continue;
 					}
+
+					if (in.at(0) == '|')
+					{
+						if (inVector.at(i + 1).at(0) == '|') //likely to go out of range if at end of command
+						{
+							pipe_sentinel = true;
+							continue;
+						}
+						if (pipe_senitnel)
+						{
+							//TODO: remove later and fix
+							continue;
+						}
+						
+					}
+					
+										
+					cmd_interpreter(in);
 				}
+				
+				
+				
+
+				//TODO: this is for connectors
+				// check if the current in.at(0) character equals a connector
+				// if it does, check if the next one equals a connector
+				// if it does, run both commands
+				// check return values of both commands
+				// ????
+				// profit
 			}//endfor
 		}//endif
 	}//endwhile
