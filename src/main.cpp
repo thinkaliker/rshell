@@ -22,11 +22,10 @@ int cmd_interpreter(string);//, char**); //prototype for command interpreter
 
 int main (int argc, char** argv)
 {
-	vector<string> inVector;
-	string input;
-
 	while(true)
 	{	
+		vector<string> inVector;
+		string input;
 		input = shell_prompt();
 		//while (inVector.back() != "")
 		if (input == "exit")
@@ -36,7 +35,7 @@ int main (int argc, char** argv)
 		}
 		else
 		{
-			char_separator<char> sep(";|&#");
+			char_separator<char> sep(";", "|&#");
 			string t;
 			tokenizer< char_separator<char> > tokens(input, sep);
 			BOOST_FOREACH(t, tokens)
@@ -46,23 +45,32 @@ int main (int argc, char** argv)
 				//for(unsigned i = 0; i < inVector.size() - 1; i++)
 				//{
 				//	cerr << inVector.at(i) << endl;
-				if (t != "#"|| t.at(0) != '#')
+//				if (t != "#"|| t.at(0) != '#')
 				{
 				//for (unsigned k = inVector.size(); k < inVector.size() ; k--)
 					inVector.push_back(t); 
-				//}
-				//	else
-				//	{
-				//}
-					
-				//cerr << inVector.back() << endl;
-					string in = inVector.at(inVector.size() - 1);
-				
-					cmd_interpreter(in);
 				}
-			}
-		}
-	}
+			} //end BOOST_FOREACH
+			
+			bool comment_sentinel = true;
+
+			for (unsigned i = 0; i < inVector.size(); i++)
+			{
+				if(comment_sentinel)	//if a comment sign is not found, execute
+				{
+					string in = inVector.at(i);
+					if (in.at(0) == '#')
+					{
+						comment_sentinel = false;
+					}
+					else
+					{
+						cmd_interpreter(in);
+					}
+				}
+			}//endfor
+		}//endif
+	}//endwhile
 
 	return 0;
 }
