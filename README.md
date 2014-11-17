@@ -14,13 +14,15 @@ This is the custom shell itself.
 
 - execute commands without flags
 - type exit to exit
+- seperate commands with connectors (;, ||, && [see below for note on connectors])
 
 #### Bugs
 
-- cannot execute commands with flags
 - cannot include #comments in input
-- cannot use connectors (;, ||, &&)
+- non-functioning connectors (||, &&)
 - if a file is called and cannot be found, typing exit will not work (must type exit again)
+- pushing arrow keys to move the cursor and then returning to the original position will result in execvp throwing an error
+- basically don't use the arrow keys
 
 * * *
 
