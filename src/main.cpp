@@ -71,7 +71,7 @@ int main (int argc, char** argv)
 							pipe_sentinel = true;
 							continue;
 						}
-						if (pipe_senitnel)
+						if (pipe_sentinel)
 						{
 							//TODO: remove later and fix
 							continue;
@@ -128,9 +128,6 @@ int cmd_interpreter(string input)//, char** argv)
 	}
 	cinput[len] = '\0';
 
-//	strcpy(argv[0], input.c_str());
-//	strcat(argv[0], "\0");
-	//cerr << argv[0] << endl;
 	int pid = fork();
 	if(pid == 0)
 	{
