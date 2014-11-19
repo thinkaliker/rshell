@@ -19,6 +19,8 @@ using namespace boost;
 
 string shell_prompt(); //prototype for prompt function
 int cmd_interpreter(string);//, char**); //prototype for command interpreter
+void input_redir(vector<string>); //prototype for input redirection function
+void output_redir(vector<string>); //prototype for output redirection function
 
 int main (int argc, char** argv)
 {
@@ -78,7 +80,20 @@ int main (int argc, char** argv)
 						}
 						
 					}
+				
+					if (in.at(0) == '<')
+					{
+						//input redirection
+						input_redir(inVector);
+						break; //input_redir handles
+					}
 					
+					if (in.at(0) == '>')
+					{
+						//output redirection
+						output_redir(inVector);
+						break; //output_redir function handles this
+					}
 										
 					cmd_interpreter(in);
 				}
@@ -98,6 +113,17 @@ int main (int argc, char** argv)
 	}//endwhile
 
 	return 0;
+}
+
+void input_redir(vector<string> input)
+{
+	//handles all of input redirection
+}
+
+void output_redir(vector<string> input)
+{
+	//handles all output redirection
+	
 }
 
 int cmd_interpreter(string input)//, char** argv)
@@ -138,10 +164,11 @@ int cmd_interpreter(string input)//, char** argv)
 			exit(1);
 			//return error;
 		}
-		//else
-		//{
+		else
+		{
 		//	execvp(argv[0], argv);
-		//}
+			return 1;
+		}
 	}
 	else
 	{
