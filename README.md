@@ -18,6 +18,7 @@ This is the custom shell itself.
 
 #### Bugs
 
+- cannot perform input/output redirection or piping.
 - cannot include #comments in input
 - non-functioning connectors (||, &&)
 - if a file is called and cannot be found, typing exit will not work (must type exit again)
