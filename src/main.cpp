@@ -131,7 +131,6 @@ int main (int argc, char** argv)
 void input_redir(vector<string> input)
 {
 	//handles all of input redirection
-cerr << " we in now" << endl;
 	for (unsigned i = 0; i < input.size(); i++)
 	{
 		if (input.at(i).at(0) == '<')
@@ -153,14 +152,15 @@ int input_helper(string one, string two)
 		{
 			if(close(0) != -1) //stdin
 			{
-				if(dup2(0, 0) != -1)
+				if(dup(0) != -1)
 				{
+		cerr << one << endl;
 					cmd_interpreter(one);
 					return 1;
 				}
 				else
 				{
-					perror("dup2");
+					perror("dup");
 					exit(1);
 				}
 			}
@@ -220,14 +220,14 @@ int output_helper(string one, string two)
 		{
 			if(close(1) != -1) //stdin
 			{
-				if(dup2(1, 1) != -1)
+				if(dup(1) != -1)
 				{
 					cmd_interpreter(one);
 					return 1;
 				}
 				else
 				{
-					perror("dup2");
+					perror("dup");
 					exit(1);
 				}
 			}
