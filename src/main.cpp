@@ -20,7 +20,7 @@ using namespace std;
 using namespace boost;
 
 string shell_prompt(); //prototype for prompt function
-int cmd_interpreter(string, bool, bool); //prototype for command interpreter
+int cmd_interpreter(string); //prototype for command interpreter
 void input_redir(vector<string>); //prototype for input redirection function
 int input_helper(string, string);
 void output_redir(vector<string>); //prototype for output redirection function
@@ -53,53 +53,65 @@ int main (int argc, char** argv)
 			bool comment_sentinel = true;
 			bool pipe_sentinel = false;
 
-			for (unsigned i = 0; i < inVector.size(); i++) //go through vector of commands - looking for comments, pipes, redirections
+			for (unsigned i = 0; i < inVector.size(); i++) //go through vector of commands - looking for comments
 			{
 				if(comment_sentinel)	//if a comment sign is not found, execute
 				{
 					string in = inVector.at(i);
+			cerr << "[ " << in << " ]" << endl;
 					if (in.at(0) == '#')
 					{
 						comment_sentinel = false;
-						continue;
 					}
 
-					if (in.at(0) == '&')
+					else
 					{
-						//TODO: remove later and fix
-						continue;
-					}
+						for (unsigned k = 0; k < inVector.size(); k++)
+						{
 
-					if (in.at(0) == '|')
-					{
-						if (inVector.at(i + 1).at(0) == '|') //likely to go out of range if at end of command
-						{
-							pipe_sentinel = true;
-							continue;
-						}
-						if (pipe_sentinel)
-						{
-							//TODO: remove later and fix
-							continue;
-						}
-						
-					}
-				
-					if (in.at(0) == '<')
-					{
-						//input redirection
-						input_redir(inVector);
-						break; //input_redir handles
-					}
+							if (inVector.at(k).at(0) == '&')
+							{
+								//TODO: remove later and fix
+							}
+
+							else if (inVector.at(k).at(0) == '|')
+							{
+								if (inVector.at(i + 1).at(0) == '|') //likely to go out of range if at end of command
+								{
+									pipe_sentinel = true;
+								}
+								if (pipe_sentinel)
+								{
+									//TODO: remove later and fix
+								}
+							
+							}
 					
-					if (in.at(0) == '>')
-					{
-						//output redirection
-						output_redir(inVector);
-						break; //output_redir function handles this
+							else if (inVector.at(k).at(0) == '<')
+							{
+								//input redirection
+					//	cerr << "we indir i hope" << endl;
+								input_redir(inVector);
+								 //input_redir handles
+								 break;
+							}
+						
+							else if (inVector.at(k).at(0) == '>')
+							{
+								//output redirection
+					//	cerr << "we outdir i hope" << endl;
+								output_redir(inVector);
+								 //output_redir function handles this
+								 break;
+								 
+							}
+							else
+							{					
+								; //nothing
+							}
+						}
+						cmd_interpreter(in);
 					}
-										
-					cmd_interpreter(in);
 				}
 				
 				//TODO: this is for connectors
@@ -119,10 +131,12 @@ int main (int argc, char** argv)
 void input_redir(vector<string> input)
 {
 	//handles all of input redirection
+cerr << " we in now" << endl;
 	for (unsigned i = 0; i < input.size(); i++)
 	{
 		if (input.at(i).at(0) == '<')
 		{
+//	cerr << "we input now" << endl;
 			input_helper(input.at(i-1), input.at(i+1));
 		}
 	}
@@ -139,9 +153,10 @@ int input_helper(string one, string two)
 		{
 			if(close(0) != -1) //stdin
 			{
-				if(dup2(0) != -1)
+				if(dup2(0, 0) != -1)
 				{
 					cmd_interpreter(one);
+					return 1;
 				}
 				else
 				{
@@ -164,10 +179,15 @@ int input_helper(string one, string two)
 	else
 	{
 		//parent
-		
+//		close(0);
 		if (waitpid(-1, NULL, 0) == -1)
 		{
 			perror("waitpid");
+			exit(1);
+		}
+		if(close(0) == -1)
+		{
+			perror("close");
 			exit(1);
 		}
 	}
@@ -180,11 +200,69 @@ void output_redir(vector<string> input)
 	//handles all output redirection
 	for (unsigned i = 0; i < input.size(); i++)
 	{
-		//iterate through vector and finds redirection
+		//iterate through vector and finds redirection		
+		if (input.at(i).at(0) == '>')
+		{
+//		cerr << "we output now" << endl;
+			output_helper(input.at(i-1), input.at(i+1));
+		}
 	}
 }
 
-int cmd_interpreter(string input, bool redir, bool flip)//, char** argv)
+int output_helper(string one, string two)
+{
+	int pid = fork();
+	if (pid == 0)
+	{
+		//child
+		//open close dup
+		if (open(two.c_str(), O_WRONLY | O_CREAT) != -1)
+		{
+			if(close(1) != -1) //stdin
+			{
+				if(dup2(1, 1) != -1)
+				{
+					cmd_interpreter(one);
+					return 1;
+				}
+				else
+				{
+					perror("dup2");
+					exit(1);
+				}
+			}
+			else
+			{
+				perror("close");
+				exit(1);
+			}
+		}
+		else
+		{
+			perror("open");
+			exit(1);
+		}
+	}
+	else
+	{
+		//parent
+//		close(1);
+		if (waitpid(-1, NULL, 0) == -1)
+		{
+			perror("waitpid");
+			exit(1);
+		}
+		if (close(1) == -1)
+		{
+			perror("close");
+			exit(1);
+		}
+	}
+	
+	return 0;
+}
+
+int cmd_interpreter(string input)//, char** argv)
 {
 	//parse command to seperate command and parameters
 
@@ -216,27 +294,6 @@ int cmd_interpreter(string input, bool redir, bool flip)//, char** argv)
 	int pid = fork();
 	if(pid == 0)
 	{
-		//checks if redirection flag is set
-		if (redir)
-		{
-			//flips between input and output
-			if(flip)
-			{
-				//input
-				int fd = open(program, O_RDONLY);
-		
-			
-				if(close(closefd) != 0)
-				{
-					perror("close");
-					exit(1);
-				}
-			}
-			else
-			{
-				//output
-			}
-		}
 		if (execvp(program, (char**)cinput) == -1)
 		{
 			perror("execvp"); // throw an error
