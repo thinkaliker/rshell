@@ -93,6 +93,7 @@ int main (int argc, char** argv)
 					//	cerr << "we indir i hope" << endl;
 								input_redir(inVector);
 								 //input_redir handles
+								 comment_sentinel = false; //force a skip
 								 break;
 							}
 						
@@ -102,12 +103,14 @@ int main (int argc, char** argv)
 					//	cerr << "we outdir i hope" << endl;
 								output_redir(inVector);
 								 //output_redir function handles this
+								 comment_sentinel = false; //force a skip
 								 break;
 								 
 							}
 							else
 							{					
 								; //nothing
+								continue;
 							}
 						}
 						cmd_interpreter(in);
@@ -154,7 +157,7 @@ int input_helper(string one, string two)
 			{
 				if(dup(0) != -1)
 				{
-		cerr << one << endl;
+		//cerr << one << endl;
 					cmd_interpreter(one);
 					return 1;
 				}
@@ -175,6 +178,11 @@ int input_helper(string one, string two)
 			perror("open");
 			exit(1);
 		}
+		if (close(0) == -1)
+		{
+			perror("close");
+			exit(1);
+		}
 	}
 	else
 	{
@@ -190,6 +198,7 @@ int input_helper(string one, string two)
 			perror("close");
 			exit(1);
 		}
+		return 1;
 	}
 	
 	return 0;
@@ -211,6 +220,7 @@ void output_redir(vector<string> input)
 
 int output_helper(string one, string two)
 {
+cerr << one << " " << two << endl;
 	int pid = fork();
 	if (pid == 0)
 	{
@@ -242,6 +252,11 @@ int output_helper(string one, string two)
 			perror("open");
 			exit(1);
 		}
+		if (close(1) == -1)
+		{
+			perror("close");
+			exit(1);
+		}
 	}
 	else
 	{
@@ -257,6 +272,7 @@ int output_helper(string one, string two)
 			perror("close");
 			exit(1);
 		}
+		return 1;
 	}
 	
 	return 0;
