@@ -5,10 +5,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <vector>
 #include <pwd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <sys/utsname.h>
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
@@ -18,9 +20,11 @@ using namespace std;
 using namespace boost;
 
 string shell_prompt(); //prototype for prompt function
-int cmd_interpreter(string);//, char**); //prototype for command interpreter
+int cmd_interpreter(string, bool, bool); //prototype for command interpreter
 void input_redir(vector<string>); //prototype for input redirection function
+int input_helper(string, string);
 void output_redir(vector<string>); //prototype for output redirection function
+int output_helper(string, string);
 
 int main (int argc, char** argv)
 {
@@ -98,9 +102,6 @@ int main (int argc, char** argv)
 					cmd_interpreter(in);
 				}
 				
-				
-				
-
 				//TODO: this is for connectors
 				// check if the current in.at(0) character equals a connector
 				// if it does, check if the next one equals a connector
@@ -118,15 +119,72 @@ int main (int argc, char** argv)
 void input_redir(vector<string> input)
 {
 	//handles all of input redirection
+	for (unsigned i = 0; i < input.size(); i++)
+	{
+		if (input.at(i).at(0) == '<')
+		{
+			input_helper(input.at(i-1), input.at(i+1));
+		}
+	}
+}
+
+int input_helper(string one, string two)
+{
+	int pid = fork();
+	if (pid == 0)
+	{
+		//child
+		//open close dup
+		if (open(two.c_str(), O_RDONLY) != -1)
+		{
+			if(close(0) != -1) //stdin
+			{
+				if(dup2(0) != -1)
+				{
+					cmd_interpreter(one);
+				}
+				else
+				{
+					perror("dup2");
+					exit(1);
+				}
+			}
+			else
+			{
+				perror("close");
+				exit(1);
+			}
+		}
+		else
+		{
+			perror("open");
+			exit(1);
+		}
+	}
+	else
+	{
+		//parent
+		
+		if (waitpid(-1, NULL, 0) == -1)
+		{
+			perror("waitpid");
+			exit(1);
+		}
+	}
+	
+	return 0;
 }
 
 void output_redir(vector<string> input)
 {
 	//handles all output redirection
-	
+	for (unsigned i = 0; i < input.size(); i++)
+	{
+		//iterate through vector and finds redirection
+	}
 }
 
-int cmd_interpreter(string input)//, char** argv)
+int cmd_interpreter(string input, bool redir, bool flip)//, char** argv)
 {
 	//parse command to seperate command and parameters
 
@@ -154,24 +212,45 @@ int cmd_interpreter(string input)//, char** argv)
 	}
 	cinput[len] = '\0';
 
+//	int pipefd[
 	int pid = fork();
 	if(pid == 0)
 	{
-//		int error = execvp(argv[0], argv);
+		//checks if redirection flag is set
+		if (redir)
+		{
+			//flips between input and output
+			if(flip)
+			{
+				//input
+				int fd = open(program, O_RDONLY);
+		
+			
+				if(close(closefd) != 0)
+				{
+					perror("close");
+					exit(1);
+				}
+			}
+			else
+			{
+				//output
+			}
+		}
 		if (execvp(program, (char**)cinput) == -1)
 		{
 			perror("execvp"); // throw an error
 			exit(1);
-			//return error;
 		}
 		else
 		{
-		//	execvp(argv[0], argv);
 			return 1;
 		}
 	}
 	else
 	{
+		//append stuff here
+
 		//parent wait
 		if (waitpid(-1, NULL, 0) == -1)
 		{
@@ -181,7 +260,6 @@ int cmd_interpreter(string input)//, char** argv)
 	}
 
 	return 0;
-	
 } 
 
 string shell_prompt()
