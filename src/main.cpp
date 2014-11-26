@@ -342,7 +342,6 @@ string shell_prompt()
 	//implement later
 //	struct utsname name;
 //	errno = 0;
-
 //	uname(&name)
 	/*
 	char name[256];
