@@ -58,7 +58,7 @@ int main (int argc, char** argv)
 				if(comment_sentinel)	//if a comment sign is not found, execute
 				{
 					string in = inVector.at(i);
-			cerr << "[ " << in << " ]" << endl;
+//			cerr << "[ " << in << " ]" << endl;
 					if (in.at(0) == '#')
 					{
 						comment_sentinel = false;
