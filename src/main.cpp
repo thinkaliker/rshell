@@ -36,11 +36,18 @@ int main (int argc, char** argv)
 		//while (inVector.back() != "")
 		if (input == "exit")
 		{
+			//exits
 			cout << "Exiting rshell." << endl;
 			exit(0);
 		}
+		else if (input == "cd")
+		{
+			//change current working directory
+			//grab second string and use as path
+		}
 		else
 		{
+			//take in input
 			char_separator<char> sep(";", "|&#<>");
 			string t;
 			tokenizer< char_separator<char> > tokens(input, sep);
@@ -76,7 +83,7 @@ int main (int argc, char** argv)
 
 							else if (inVector.at(k).at(0) == '|')
 							{
-								if (inVector.at(i + 1).at(0) == '|') //likely to go out of range if at end of command
+								if (inVector.at(k + 1).at(0) == '|') //likely to go out of range if at end of command
 								{
 									pipe_sentinel = true;
 								}
