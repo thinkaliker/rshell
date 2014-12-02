@@ -10,6 +10,7 @@
 #include <pwd.h>
 #include <algorithm>
 #include <functional>
+#include <dirent.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -28,6 +29,7 @@ int input_helper(string, string);
 void output_redir(vector<string>); //prototype for output redirection function
 int output_helper(string, string);
 const char* convert(const string);
+bool read_dir(const char*, const char*);
 
 int main (int argc, char** argv)
 {
@@ -332,36 +334,47 @@ int cmd_interpreter(string input)//, char** argv)
 	string env (envstr);
 	vector<string> paths;
 	split(paths, env, is_any_of(":"));
-	
+
+	paths.push_back(".");	//current directory last	
 	//iterate through entire path vector and check if file exists
+	
+	bool find_flag = false;
 	for(unsigned i = 0; i < paths.size(); i++)
 	{
 		paths.at(i) += "/";
-		paths.at(i) += cinput.at(0);
-			
-		int pid = fork();
-		if(pid == 0)
+		if(read_dir(paths.at(i).c_str(), cinput.at(0)) && !find_flag)
 		{
-			if ((execv(paths.at(i).c_str(), &cinput.front())) == -1)
+			paths.at(i) += cinput.at(0);
+	//		cerr << "test" << endl;
+			find_flag = true;
+			int pid = fork();
+			if(pid == 0)
 			{
-				perror("execv"); // throw an error
-				exit(1);
+				if ((execv(paths.at(i).c_str(), &cinput.front())) == -1)
+				{
+					perror("execv"); // throw an error
+					exit(1);
+				}
+				else
+				{
+					return 1;
+				}
 			}
 			else
 			{
-				return 1;
-			}
-		}
-		else
-		{
 
-			//parent wait
-			if (waitpid(-1, NULL, 0) == -1)
-			{
-				perror("waitpid");
-				exit(1);
+				//parent wait
+				if (waitpid(-1, NULL, 0) == -1)
+				{
+					perror("waitpid");
+					exit(1);
+				}
 			}
 		}
+	}
+	if (!find_flag)
+	{
+		cout << "Error: could not find " << cinput.at(0) << endl;
 	}
 
 	return 0;
@@ -370,17 +383,10 @@ int cmd_interpreter(string input)//, char** argv)
 string shell_prompt()
 {
 	string in;
-	//TODO - error checking for getlogin and gethostname
-	//implement later
-//	struct utsname name;
-//	errno = 0;
-//	uname(&name)
-
 	char name[256];
 	size_t maxlen = 64;
 	if (gethostname(name, maxlen) != -1)
 	{
-//		string strname(name);
 		char* strlogin = getlogin();
 		if (strlogin == NULL)
 		{
@@ -389,7 +395,6 @@ string shell_prompt()
 		}
 	
 		cout << strlogin << "@" << name  << "$ "; //custom prompt with hostname and login name
-//		cin >> in;
 	}
 	else
 	{
@@ -405,4 +410,81 @@ string shell_prompt()
 const char* convert(const string &str)
 {
 	return str.c_str();
+}
+
+bool read_dir(const char* dirName, const char* name)
+{
+	errno = 0;
+	DIR *dirp = opendir(dirName);
+	if(errno == 0)
+	{
+//		cerr << "searching..." << name << " in " << dirName << endl;
+		while (true)
+		{
+			errno = 0;
+			dirent *dp;
+			if ((dp = readdir(dirp)) != NULL)
+			{
+				if(strcmp(dp->d_name, name) == 0)
+				{
+					if(closedir(dirp) != 0)
+					{
+						perror("closedir");
+						return false;
+					}
+					else
+					{
+						return true;
+					}
+				}
+			}
+			else
+			{
+				if (closedir(dirp) != 0)
+				{
+					perror("closedir");
+					return false;
+				}
+				return false;
+			}
+		}
+		return false;
+	}
+	else
+	{
+		return false;
+		perror("opendir");
+//		return false;
+	}
+/*
+
+
+	if ((dirp == 0))
+	{
+		perror("opendir");
+	}
+	else
+	{
+		dirent *direntp;
+		while (true)
+		{
+			errno = 0;
+			if ((direntp = readdir(dirp)) != 0)
+			{
+				return true;
+				continue;
+			}
+			if(errno != 0)
+			{
+				perror("readdir");
+			}
+			break;
+		}
+		if (closedir(dirp) != 0)
+		{
+			perror("closedir");
+		}
+	}
+	return false;
+	*/
 }
