@@ -297,16 +297,16 @@ int cmd_interpreter(string input)//, char** argv)
 	
 	vector<string> invector;
 	string t;
-	vector<const char*> cinput;
+	vector<char*> cinput;
 	char_separator<char> sep(" ");
 	tokenizer< char_separator<char> > tokens(input, sep);
-	//int i = 0;
 	BOOST_FOREACH(t, tokens)		//tokenize input string with flags to seperate items
 	{
-		invector.push_back(t);
+		char* stuff = const_cast<char*>(string(t).c_str());
+		cinput.push_back(stuff);
 	}
-
-	transform(invector.begin(), invector.end(), back_inserter(cinput), convert);
+	cinput.push_back(NULL);	//put the null terminating charater in back
+	//transform(invector.begin(), invector.end(), back_inserter(cinput), convert);
 		
 //	for (unsigned i = 0; i < len; i++)
 //	{
@@ -338,11 +338,11 @@ int cmd_interpreter(string input)//, char** argv)
 	{
 		paths.at(i) += "/";
 		paths.at(i) += cinput.at(0);
-		
+			
 		int pid = fork();
 		if(pid == 0)
 		{
-			if ((execv(paths.at(i).c_str(), cinput.front())) == -1)
+			if ((execv(paths.at(i).c_str(), &cinput.front())) == -1)
 			{
 				perror("execv"); // throw an error
 				exit(1);
@@ -354,7 +354,6 @@ int cmd_interpreter(string input)//, char** argv)
 		}
 		else
 		{
-			//append stuff here
 
 			//parent wait
 			if (waitpid(-1, NULL, 0) == -1)
@@ -364,6 +363,7 @@ int cmd_interpreter(string input)//, char** argv)
 			}
 		}
 	}
+
 	return 0;
 } 
 
