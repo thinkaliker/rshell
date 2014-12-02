@@ -165,7 +165,7 @@ void change_dir(string in)
 	BOOST_FOREACH(t, tokens)		//tokenize input string with flags to seperate items
 	{
 		input.push_back(t);
-
+	}
 	cerr << input.at(0) << " to " << input.at(1) << endl;
 	//need chdir
 
