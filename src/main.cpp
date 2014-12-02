@@ -76,6 +76,7 @@ int main (int argc, char** argv)
 						if(inVector.at(i) == "cd")
 						{
 							//change directory
+			cerr << "yo we change dirs yo" << endl;
 
 							continue;
 						}
@@ -387,14 +388,24 @@ string shell_prompt()
 	size_t maxlen = 64;
 	if (gethostname(name, maxlen) != -1)
 	{
+		errno = 0;
 		char* strlogin = getlogin();
 		if (strlogin == NULL)
 		{
 			perror("getlogin");
 			exit(1);
 		}
-	
-		cout << strlogin << "@" << name  << "$ "; //custom prompt with hostname and login name
+		errno = 0;
+		char* strcwd = get_current_dir_name();
+		if (errno != 0)
+		{
+			perror("getcwd");
+			exit(1);
+		}
+		else
+		{
+			cout << strlogin << "@" << name << ":" << strcwd << "$ "; //custom prompt with hostname and login name
+		}
 	}
 	else
 	{
@@ -456,35 +467,4 @@ bool read_dir(const char* dirName, const char* name)
 		perror("opendir");
 //		return false;
 	}
-/*
-
-
-	if ((dirp == 0))
-	{
-		perror("opendir");
-	}
-	else
-	{
-		dirent *direntp;
-		while (true)
-		{
-			errno = 0;
-			if ((direntp = readdir(dirp)) != 0)
-			{
-				return true;
-				continue;
-			}
-			if(errno != 0)
-			{
-				perror("readdir");
-			}
-			break;
-		}
-		if (closedir(dirp) != 0)
-		{
-			perror("closedir");
-		}
-	}
-	return false;
-	*/
 }
