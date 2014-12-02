@@ -30,6 +30,7 @@ void output_redir(vector<string>); //prototype for output redirection function
 int output_helper(string, string);
 const char* convert(const string);
 bool read_dir(const char*, const char*);
+void change_dir(string);
 
 int main (int argc, char** argv)
 {
@@ -59,75 +60,85 @@ int main (int argc, char** argv)
 			
 			bool comment_sentinel = true;
 			bool pipe_sentinel = false;
+			bool cd_sentinel = false;
 
 			for (unsigned i = 0; i < inVector.size(); i++) //go through vector of commands - looking for comments
 			{
-				if(comment_sentinel)	//if a comment sign is not found, execute
+				if((comment_sentinel)&&(!cd_sentinel))	//if a comment sign is not found, execute
 				{
 					string in = inVector.at(i);
-//			cerr << "[ " << in << " ]" << endl;
+	//		cerr << "[ " << in << " ]" << endl;
 					if (in.at(0) == '#')
 					{
 						comment_sentinel = false;
 					}
-
 					else
 					{
-						if(inVector.at(i) == "cd")
+//						if((in == "cd")||!cd_sentinel)
+						string cd = "cd";
+//			cerr << "compare: " << in.compare(0,2, cd) << endl;
+						if(in.compare(0, 2, cd) == 0 )
 						{
 							//change directory
-			cerr << "yo we change dirs yo" << endl;
-
-							continue;
+							change_dir(in);
+							cd_sentinel = true;
+							break;
 						}
-						for (unsigned k = 0; k < inVector.size(); k++)
+						else if (cd_sentinel)
 						{
-
-							if (inVector.at(k).at(0) == '&')
+							break;
+						}
+						else
+						{
+							for (unsigned k = 0; k < inVector.size(); k++)
 							{
-								//TODO: remove later and fix
-							}
 
-							else if (inVector.at(k).at(0) == '|')
-							{
-								if (inVector.at(k + 1).at(0) == '|') //likely to go out of range if at end of command
-								{
-									pipe_sentinel = true;
-								}
-								if (pipe_sentinel)
+								if (inVector.at(k).at(0) == '&')
 								{
 									//TODO: remove later and fix
 								}
-							
-							}
-					
-							else if (inVector.at(k).at(0) == '<')
-							{
-								//input redirection
-					//	cerr << "we indir i hope" << endl;
-								input_redir(inVector);
-								 //input_redir handles
-								 comment_sentinel = false; //force a skip
-								 break;
-							}
+
+								else if (inVector.at(k).at(0) == '|')
+								{
+									if (inVector.at(k + 1).at(0) == '|') //likely to go out of range if at end of command
+									{
+										pipe_sentinel = true;
+									}
+									if (pipe_sentinel)
+									{
+										//TODO: remove later and fix
+									}
+								
+								}
 						
-							else if (inVector.at(k).at(0) == '>')
-							{
-								//output redirection
-					//	cerr << "we outdir i hope" << endl;
-								output_redir(inVector);
-								 //output_redir function handles this
-								 comment_sentinel = false; //force a skip
-								 break;
-								 
+								else if (inVector.at(k).at(0) == '<')
+								{
+									//input redirection
+						//	cerr << "we indir i hope" << endl;
+									input_redir(inVector);
+									 //input_redir handles
+									 comment_sentinel = false; //force a skip
+									 break;
+								}
+							
+								else if (inVector.at(k).at(0) == '>')
+								{
+									//output redirection
+						//	cerr << "we outdir i hope" << endl;
+									output_redir(inVector);
+									 //output_redir function handles this
+									 comment_sentinel = false; //force a skip
+									 break;
+									 
+								}
+								else
+								{					
+									 //nothing
+									continue;
+								}
 							}
-							else
-							{					
-								; //nothing
-								continue;
-							}
+							cmd_interpreter(in);
 						}
-						cmd_interpreter(in);
 					}
 				}
 				
@@ -143,6 +154,26 @@ int main (int argc, char** argv)
 	}//endwhile
 
 	return 0;
+}
+
+void change_dir(string in)
+{
+	vector<string> input;
+	string t;
+	char_separator<char> sep(" ");
+	tokenizer< char_separator<char> > tokens(in, sep);
+	BOOST_FOREACH(t, tokens)		//tokenize input string with flags to seperate items
+	{
+		input.push_back(t);
+
+	cerr << input.at(0) << " to " << input.at(1) << endl;
+	//need chdir
+
+	if (chdir(input.at(1).c_str()) == -1)
+	{
+		perror("chdir");
+	}
+
 }
 
 void input_redir(vector<string> input)
@@ -309,22 +340,6 @@ int cmd_interpreter(string input)//, char** argv)
 		cinput.push_back(stuff);
 	}
 	cinput.push_back(NULL);	//put the null terminating charater in back
-	//transform(invector.begin(), invector.end(), back_inserter(cinput), convert);
-		
-//	for (unsigned i = 0; i < len; i++)
-//	{
-//		cinput.push_back(invector.at(i).c_str());
-//	}
-//	const char** cinput = new const char*[len+2];
-//	const char* program = invector.at(0).c_str();
-
-//	cinput[0] = program;
-
-//	for(unsigned i = 1; i < 1 + len; i++)
-//	{
-//		cinput[i] = invector[i].c_str();
-//	}
-//	cinput[len] = '\0';
 
 	char*  envstr = getenv("PATH");
 	if (envstr == NULL)
