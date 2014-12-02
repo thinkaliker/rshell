@@ -24,7 +24,6 @@ This is the custom shell itself.
 - using ~ in cd does not work
 - cannot perform input/output redirection or piping.
 - non-functioning connectors (||, &&)
-- if a file is called and cannot be found, typing exit will not work (must type exit again)
 - pushing arrow keys to move the cursor and then returning to the original position will result in execvp throwing an error
 - basically don't use the arrow keys
 
