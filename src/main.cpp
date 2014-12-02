@@ -368,19 +368,30 @@ int cmd_interpreter(string input)//, bool fg, bool bg)//, char** argv)
 {
 	//parse command to seperate command and parameters
 
-	//int len = input.length();
-	
+	bool relative = false;
+	string cd = "./";
+	if(input.compare(0, 2, cd) == 0)
+	{
+		input.erase(0, 2);
+		relative = true;
+	}
+
 	vector<string> invector;
 	string t;
 	vector<char*> cinput;
+	cinput.reserve(16);
 	char_separator<char> sep(" ");
 	tokenizer< char_separator<char> > tokens(input, sep);
 	BOOST_FOREACH(t, tokens)		//tokenize input string with flags to seperate items
 	{
-		char* stuff = const_cast<char*>(string(t).c_str());
-		cinput.push_back(stuff);
+//		char* stuff = t.c_str());
+		cinput.push_back(const_cast<char*>(string(t).c_str()));
+//		cerr << "stuff: " << stuff << endl;
 	}
+//	cinput.push_back(input.c_str());
 	cinput.push_back(NULL);	//put the null terminating charater in back
+
+cerr << "cinput size: " << cinput.size() << endl;
 
 	char*  envstr = getenv("PATH");
 	if (envstr == NULL)
@@ -392,16 +403,29 @@ int cmd_interpreter(string input)//, bool fg, bool bg)//, char** argv)
 	vector<string> paths;
 	split(paths, env, is_any_of(":"));
 
-	paths.push_back(".");	//current directory last	
+	if(relative)
+	{
+		string d = ".";
+		vector<string>::iterator it;
+		it = paths.begin();
+		it = paths.insert(it, d);
+	}
+
 	//iterate through entire path vector and check if file exists
 	
 	bool find_flag = false;
 	for(unsigned i = 0; i < paths.size(); i++)
 	{
+		char* cmd = cinput[0];
 		paths.at(i) += "/";
-		if(read_dir(paths.at(i).c_str(), cinput.at(0)) && !find_flag)
+//		cerr << "pathstuff: " << paths.at(i) << " | " << cmd  << " |" << endl;
+
+		if(read_dir(paths.at(i).c_str(), cmd) && (!find_flag))
 		{
-			paths.at(i) += cinput.at(0);
+			paths.at(i) += string(cmd);
+	cerr << "pathappend: " << paths.at(i) << endl;
+
+
 			find_flag = true;
 			int pid = fork();
 			if(pid == 0)
@@ -426,7 +450,8 @@ int cmd_interpreter(string input)//, bool fg, bool bg)//, char** argv)
 			//	signal(SIGTTOU, SIG_DFL);
 			//	signal(SIGTTIN, SIG_DFL);
 				*/
-				if ((execv(paths.at(i).c_str(), &cinput.front())) == -1)
+//		cerr << "exec: " << paths.at(i).c_str()[0] << " | " << &cinput[0] << endl;
+				if ((execv(paths.at(i).c_str(), &cinput[0])) == -1) //&cinput.front())) == -1)
 				{
 					perror("execv"); // throw an error
 					exit(1);
@@ -544,7 +569,6 @@ bool read_dir(const char* dirName, const char* name)
 					if(closedir(dirp) != 0)
 					{
 						perror("closedir");
-						return false;
 					}
 					else
 					{
@@ -557,7 +581,6 @@ bool read_dir(const char* dirName, const char* name)
 				if (closedir(dirp) != 0)
 				{
 					perror("closedir");
-					return false;
 				}
 				return false;
 			}
