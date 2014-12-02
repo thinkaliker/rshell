@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <functional>
 #include <dirent.h>
+#include <signal.h>
+#include <csignal>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -31,9 +33,11 @@ int output_helper(string, string);
 const char* convert(const string);
 bool read_dir(const char*, const char*);
 void change_dir(string);
+void signal_handler(int);
 
 int main (int argc, char** argv)
 {
+	signal(SIGINT, signal_handler);
 	while(true)
 	{	
 		vector<string> inVector;
@@ -154,6 +158,15 @@ int main (int argc, char** argv)
 	}//endwhile
 
 	return 0;
+}
+
+void signal_handler(int signum)
+{
+		if(signum == SIGINT)
+		{
+			//quit signal called
+			return;
+		}
 }
 
 void change_dir(string in)
