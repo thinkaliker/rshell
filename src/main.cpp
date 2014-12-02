@@ -8,6 +8,8 @@
 #include <fcntl.h>
 #include <vector>
 #include <pwd.h>
+#include <algorithm>
+#include <functional>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -25,6 +27,7 @@ void input_redir(vector<string>); //prototype for input redirection function
 int input_helper(string, string);
 void output_redir(vector<string>); //prototype for output redirection function
 int output_helper(string, string);
+const char* convert(const string);
 
 int main (int argc, char** argv)
 {
@@ -39,11 +42,6 @@ int main (int argc, char** argv)
 			//exits
 			cout << "Exiting rshell." << endl;
 			exit(0);
-		}
-		else if (input == "cd")
-		{
-			//change current working directory
-			//grab second string and use as path
 		}
 		else
 		{
@@ -73,6 +71,12 @@ int main (int argc, char** argv)
 
 					else
 					{
+						if(inVector.at(i) == "cd")
+						{
+							//change directory
+
+							continue;
+						}
 						for (unsigned k = 0; k < inVector.size(); k++)
 						{
 
@@ -213,7 +217,7 @@ int input_helper(string one, string two)
 
 void output_redir(vector<string> input)
 {
-	//handles all output redirection
+	//handles all output redirectionThen pass it to your function via the .data() member of vector:
 	for (unsigned i = 0; i < input.size(); i++)
 	{
 		//iterate through vector and finds redirection		
@@ -227,7 +231,7 @@ void output_redir(vector<string> input)
 
 int output_helper(string one, string two)
 {
-cerr << one << " " << two << endl;
+//cerr << one << " " << two << endl;
 	int pid = fork();
 	if (pid == 0)
 	{
@@ -293,6 +297,7 @@ int cmd_interpreter(string input)//, char** argv)
 	
 	vector<string> invector;
 	string t;
+	vector<const char*> cinput;
 	char_separator<char> sep(" ");
 	tokenizer< char_separator<char> > tokens(input, sep);
 	//int i = 0;
@@ -300,45 +305,65 @@ int cmd_interpreter(string input)//, char** argv)
 	{
 		invector.push_back(t);
 	}
-	unsigned len = invector.size();	
 
-	const char** cinput = new const char*[len+2];
-	const char* program = invector.at(0).c_str();
+	transform(invector.begin(), invector.end(), back_inserter(cinput), convert);
+		
+//	for (unsigned i = 0; i < len; i++)
+//	{
+//		cinput.push_back(invector.at(i).c_str());
+//	}
+//	const char** cinput = new const char*[len+2];
+//	const char* program = invector.at(0).c_str();
 
-	cinput[0] = program;
+//	cinput[0] = program;
 
-	for(unsigned i = 1; i < 1 + len; i++)
+//	for(unsigned i = 1; i < 1 + len; i++)
+//	{
+//		cinput[i] = invector[i].c_str();
+//	}
+//	cinput[len] = '\0';
+
+	char*  envstr = getenv("PATH");
+	if (envstr == NULL)
 	{
-		cinput[i] = invector[i].c_str();
+		perror("getenv");
+		exit(0);
 	}
-	cinput[len] = '\0';
-
-//	int pipefd[
-	int pid = fork();
-	if(pid == 0)
+	string env (envstr);
+	vector<string> paths;
+	split(paths, env, is_any_of(":"));
+	
+	//iterate through entire path vector and check if file exists
+	for(unsigned i = 0; i < paths.size(); i++)
 	{
-		if (execvp(program, (char**)cinput) == -1)
+		paths.at(i) += "/";
+		paths.at(i) += cinput.at(0);
+		
+		int pid = fork();
+		if(pid == 0)
 		{
-			perror("execvp"); // throw an error
-			exit(1);
+			if ((execv(paths.at(i).c_str(), cinput.front())) == -1)
+			{
+				perror("execv"); // throw an error
+				exit(1);
+			}
+			else
+			{
+				return 1;
+			}
 		}
 		else
 		{
-			return 1;
+			//append stuff here
+
+			//parent wait
+			if (waitpid(-1, NULL, 0) == -1)
+			{
+				perror("waitpid");
+				exit(1);
+			}
 		}
 	}
-	else
-	{
-		//append stuff here
-
-		//parent wait
-		if (waitpid(-1, NULL, 0) == -1)
-		{
-			perror("waitpid");
-			exit(1);
-		}
-	}
-
 	return 0;
 } 
 
@@ -350,22 +375,34 @@ string shell_prompt()
 //	struct utsname name;
 //	errno = 0;
 //	uname(&name)
-	/*
+
 	char name[256];
-	int maxlen = 64;
-	if (!gethostname(name, maxlen))
+	size_t maxlen = 64;
+	if (gethostname(name, maxlen) != -1)
 	{
-		string strname(name);
-		cout << getlogin() << "@" << name  << "$ "; //custom prompt with hostname and login name
-		cin >> in;
+//		string strname(name);
+		char* strlogin = getlogin();
+		if (strlogin == NULL)
+		{
+			perror("getlogin");
+			exit(1);
+		}
+	
+		cout << strlogin << "@" << name  << "$ "; //custom prompt with hostname and login name
+//		cin >> in;
 	}
 	else
 	{
 		perror("gethostname"); //throw error if not found
 	}
-	*/
-	cout << "rshell$ ";
+
+//	cout << "rshell$ ";
 	getline(cin, in);
 	cin.clear();
 	return in;
+}
+
+const char* convert(const string &str)
+{
+	return str.c_str();
 }
