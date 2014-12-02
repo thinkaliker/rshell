@@ -25,7 +25,7 @@ using namespace std;
 using namespace boost;
 
 string shell_prompt(); //prototype for prompt function
-int cmd_interpreter(string); //prototype for command interpreter
+int cmd_interpreter(string);//, bool, bool); //prototype for command interpreter
 void input_redir(vector<string>); //prototype for input redirection function
 int input_helper(string, string);
 void output_redir(vector<string>); //prototype for output redirection function
@@ -37,7 +37,11 @@ void signal_handler(int);
 
 int main (int argc, char** argv)
 {
-	signal(SIGINT, signal_handler);
+	if (signal(SIGINT, signal_handler) == SIG_ERR)
+	{
+		perror("signal");
+		exit(1);
+	}
 	while(true)
 	{	
 		vector<string> inVector;
@@ -141,10 +145,11 @@ int main (int argc, char** argv)
 									continue;
 								}
 							}
-							cmd_interpreter(in);
+							cmd_interpreter(in);//, true, false);
 						}
 					}
-				}
+				}	//		cerr << "test" << endl;
+
 				
 				//TODO: this is for connectors
 				// check if the current in.at(0) character equals a connector
@@ -167,6 +172,12 @@ void signal_handler(int signum)
 			//quit signal called
 			return;
 		}
+		else if (signum == SIGSTOP)
+		{
+			//background
+			return;
+		}
+
 }
 
 void change_dir(string in)
@@ -222,7 +233,7 @@ int input_helper(string one, string two)
 				if(dup(0) != -1)
 				{
 		//cerr << one << endl;
-					cmd_interpreter(one);
+					cmd_interpreter(one);//, false, false);
 					return 1;
 				}
 				else
@@ -250,6 +261,11 @@ int input_helper(string one, string two)
 	}
 	else
 	{
+		if (pid == -1)
+		{
+			perror("fork");
+			exit(1);
+		}
 		//parent
 //		close(0);
 		if (waitpid(-1, NULL, 0) == -1)
@@ -296,7 +312,7 @@ int output_helper(string one, string two)
 			{
 				if(dup(1) != -1)
 				{
-					cmd_interpreter(one);
+					cmd_interpreter(one);//, false, false);
 					return 1;
 				}
 				else
@@ -324,6 +340,11 @@ int output_helper(string one, string two)
 	}
 	else
 	{
+		if (pid == -1)
+		{
+			perror("fork");
+			exit(1);
+		}
 		//parent
 //		close(1);
 		if (waitpid(-1, NULL, 0) == -1)
@@ -337,12 +358,13 @@ int output_helper(string one, string two)
 			exit(1);
 		}
 		return 1;
+
 	}
 	
 	return 0;
 }
 
-int cmd_interpreter(string input)//, char** argv)
+int cmd_interpreter(string input)//, bool fg, bool bg)//, char** argv)
 {
 	//parse command to seperate command and parameters
 
@@ -380,11 +402,30 @@ int cmd_interpreter(string input)//, char** argv)
 		if(read_dir(paths.at(i).c_str(), cinput.at(0)) && !find_flag)
 		{
 			paths.at(i) += cinput.at(0);
-	//		cerr << "test" << endl;
 			find_flag = true;
 			int pid = fork();
 			if(pid == 0)
 			{
+	/*			if(setpgid(0,0) == -1)
+				{
+					perror("setpgid");
+					exit(1);
+				}
+				else if (fg)
+				{
+					if(tcsetpgrp(0,0) == -1)
+					{
+						perror("tcsetpgrp");
+						exit(1);
+					}
+				}
+				else
+				{
+					;
+				}
+			//	signal(SIGTTOU, SIG_DFL);
+			//	signal(SIGTTIN, SIG_DFL);
+				*/
 				if ((execv(paths.at(i).c_str(), &cinput.front())) == -1)
 				{
 					perror("execv"); // throw an error
@@ -397,13 +438,42 @@ int cmd_interpreter(string input)//, char** argv)
 			}
 			else
 			{
-
-				//parent wait
-				if (waitpid(-1, NULL, 0) == -1)
+				if (pid == -1)
 				{
-					perror("waitpid");
+					perror("fork");
 					exit(1);
 				}
+			/*	if(fg)
+				{
+					if(tcsetpgrp(0,0) == -1)
+					{
+						perror("tcsetpgrp");
+						exit(1);
+					}
+
+				//	signal(SIGTTOU, SIG_DFL);
+				//	signal(SIGTTIN, SIG_DFL);
+					*/
+									//parent wait
+					if (waitpid(0, NULL, WUNTRACED) == -1)
+					{
+						perror("waitpid");
+						exit(1);
+					}
+/*
+					if(tcsetpgrp(0,0) == -1)
+					{
+						perror("tcsetpgrp");
+						exit(1);
+					}
+
+				}
+				if(bg)
+				{
+			//		signal(SIGTTIN, SIG_DFL);
+			//		signal(SIGTTOU, SIG_DFL);
+				}
+				*/
 			}
 		}
 	}
@@ -466,7 +536,6 @@ bool read_dir(const char* dirName, const char* name)
 //		cerr << "searching..." << name << " in " << dirName << endl;
 		while (true)
 		{
-			errno = 0;
 			dirent *dp;
 			if ((dp = readdir(dirp)) != NULL)
 			{
