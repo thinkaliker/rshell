@@ -171,22 +171,28 @@ void signal_handler(int signum)
 
 void change_dir(string in)
 {
-	vector<string> input;
-	string t;
-	char_separator<char> sep(" ");
-	tokenizer< char_separator<char> > tokens(in, sep);
-	BOOST_FOREACH(t, tokens)		//tokenize input string with flags to seperate items
+	if(in.length() > 3)
 	{
-		input.push_back(t);
-	}
-	cerr << input.at(0) << " to " << input.at(1) << endl;
-	//need chdir
+		vector<string> input;
+		string t;
+		char_separator<char> sep(" ");
+		tokenizer< char_separator<char> > tokens(in, sep);
+		BOOST_FOREACH(t, tokens)		//tokenize input string with flags to seperate items
+		{
+			input.push_back(t);
+		}
+	//	cerr << input.at(0) << " to " << input.at(1) << endl;
+		//need chdir
 
-	if (chdir(input.at(1).c_str()) == -1)
+		if (chdir(input.at(1).c_str()) == -1)
+		{
+			perror("chdir");
+		}
+	}
+	else
 	{
-		perror("chdir");
+		cerr << "Error: directory name not provided" << endl;
 	}
-
 }
 
 void input_redir(vector<string> input)
