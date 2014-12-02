@@ -12,14 +12,17 @@ This is the custom shell itself.
 
 #### Features
 
+- indicates who is logged in and the current directory
 - execute commands without flags
 - type exit to exit
 - seperate commands with connectors (;, ||, && [see below for note on connectors])
+- use comments to ignore the rest of input past that point
+- use cd to change directory
 
 #### Bugs
 
+- using ~ in cd does not work
 - cannot perform input/output redirection or piping.
-- cannot include #comments in input
 - non-functioning connectors (||, &&)
 - if a file is called and cannot be found, typing exit will not work (must type exit again)
 - pushing arrow keys to move the cursor and then returning to the original position will result in execvp throwing an error
