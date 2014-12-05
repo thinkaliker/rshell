@@ -13,7 +13,7 @@ This is the custom shell itself.
 #### Features
 
 - indicates who is logged in and the current directory
-- execute commands without flags
+- execute any command with any amount of flags
 - type exit to exit
 - seperate commands with connectors (;, ||, && [see below for note on connectors])
 - use comments to ignore the rest of input past that point
@@ -21,10 +21,12 @@ This is the custom shell itself.
 
 #### Bugs
 
-- using ~ in cd does not work
+- memory leaks
+- using ./ for current directory does not work
+- using ~ anywhere does not work
 - cannot perform input/output redirection or piping.
 - non-functioning connectors (||, &&)
-- pushing arrow keys to move the cursor and then returning to the original position will result in execvp throwing an error
+- pushing arrow keys to move the cursor and then returning to the original position will result in execv throwing an error
 - basically don't use the arrow keys
 
 * * *
