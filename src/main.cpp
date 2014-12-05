@@ -388,7 +388,9 @@ int cmd_interpreter(string input)//, bool fg, bool bg)//, char** argv)
 		strcpy(stuff, t.c_str());
 		cinput.push_back(stuff);
 //		cerr << "stuff: " << stuff << endl;
+//		delete [] stuff;
 	}
+//	delete [] stuff;
 //	cinput.push_back(input.c_str());
 	char* zero = '\0';
 	cinput.push_back(zero);	//put the null terminating charater in back
