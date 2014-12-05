@@ -384,14 +384,16 @@ int cmd_interpreter(string input)//, bool fg, bool bg)//, char** argv)
 	tokenizer< char_separator<char> > tokens(input, sep);
 	BOOST_FOREACH(t, tokens)		//tokenize input string with flags to seperate items
 	{
-//		char* stuff = t.c_str());
-		cinput.push_back(const_cast<char*>(string(t).c_str()));
+		char* stuff = new char[t.size()+1];
+		strcpy(stuff, t.c_str());
+		cinput.push_back(stuff);
 //		cerr << "stuff: " << stuff << endl;
 	}
 //	cinput.push_back(input.c_str());
-	cinput.push_back(NULL);	//put the null terminating charater in back
+	char* zero = '\0';
+	cinput.push_back(zero);	//put the null terminating charater in back
 
-cerr << "cinput size: " << cinput.size() << endl;
+//cerr << "cinput size: " << cinput.size() << endl;
 
 	char*  envstr = getenv("PATH");
 	if (envstr == NULL)
@@ -412,21 +414,29 @@ cerr << "cinput size: " << cinput.size() << endl;
 	}
 
 	//iterate through entire path vector and check if file exists
+	//
+//	for (unsigned i = 0; i < cinput.size(); i++)
+//	{
+//		cout << "CINPUT: " << cinput[i] << endl;
+//	}
+//	cout << flush;
 	
 	bool find_flag = false;
+	char* cmd = cinput[0];
 	for(unsigned i = 0; i < paths.size(); i++)
 	{
-		char* cmd = cinput[0];
+//		char* cmd = cinput[0];
 		paths.at(i) += "/";
 //		cerr << "pathstuff: " << paths.at(i) << " | " << cmd  << " |" << endl;
 
 		if(read_dir(paths.at(i).c_str(), cmd) && (!find_flag))
 		{
-			paths.at(i) += string(cmd);
-	cerr << "pathappend: " << paths.at(i) << endl;
-
-
 			find_flag = true;
+			string input = paths.at(i)+string(cmd);
+//			paths.at(i) += string(cmd).c_str();
+//			paths.at(i) += "\0";
+//	cerr << "pathappend: " << input << endl;
+
 			int pid = fork();
 			if(pid == 0)
 			{
@@ -451,7 +461,7 @@ cerr << "cinput size: " << cinput.size() << endl;
 			//	signal(SIGTTIN, SIG_DFL);
 				*/
 //		cerr << "exec: " << paths.at(i).c_str()[0] << " | " << &cinput[0] << endl;
-				if ((execv(paths.at(i).c_str(), &cinput[0])) == -1) //&cinput.front())) == -1)
+				if ((execv(input.c_str(), &cinput.front())) == -1) //&cinput.front())) == -1)
 				{
 					perror("execv"); // throw an error
 					exit(1);
