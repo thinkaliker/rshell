@@ -22,7 +22,7 @@ This is the custom shell itself.
 #### Bugs
 
 - memory leaks
-- using ./ for current directory does not work
+- using ./ only works in the current directory and not any subfolders
 - using ~ anywhere does not work
 - cannot perform input/output redirection or piping.
 - non-functioning connectors (||, &&)
