@@ -1,0 +1,49 @@
+Script started on Fri 05 Dec 2014 07:57:55 PM PST
+~
+achao008@hammer $ cd[Ks100
+[0;91m
+===============================================================================
+|                                                                             |
+| You have enabled settings specific for cs100.                               |
+|                                                                             |
+===============================================================================
+[0m
+[s%%%%%%%%%%[u[0;32machao008[0;36m@[0;32mcs100[0;36m:[0;32m~[0;95m [0;36m$[0m cd Documents/CS100/rshell
+[s%%%%%%%%%%[u[0;32machao008[0;36m@[0;32mcs100[0;36m:[0;32m~/Documents/CS100/rshell[0;95m (signal) [0;36m$[0m bin/rshell
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100/rshell$ #u current directory shown
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100/rshell$ pwd #c shows current directory
+/home/csmajs/achao008/Documents/CS100/rshell
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100/rshell$ cd #throws an error
+Error: directory name not provided
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100/rshell$ cd .. #nag vigates up a directory
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100$ cd /rshel      er  rshell  #nag vigate into current directory                  d  directory  
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100/rshell$ cd bin
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100/rshell/bin$ ls #runs a normal command in path somewhere                 from path
+cp  ls	rshell
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100/rshell/bin$ ls -l -r #runs normal command from path with flags
+total 216
+-rwx------ 1 achao008 csmajs 146502 Dec  5 00:18 rshell
+-rwx------ 1 achao008 csmajs  45588 Dec  2 01:01 ls
+-rwx------ 1 achao008 csmajs  17716 Dec  2 01:01 cp
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100/rshell/bin$ ./ls  #run command from local directory
+cp  ls  rshell  
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100/rshell/bin$ ./ls -  a -l  #run command from local directory with flags
+drwx------ 2  achao008 csmajs  4096    Dec  5 00:18[34m .[0m
+drwx------ 6  achao008 csmajs  4096    Dec  5 00:20[34m ..[0m
+-rwx------ 1  achao008 csmajs  17716   Dec  2 01:01[32m cp[0m
+-rwx------ 1  achao008 csmajs  45588   Dec  2 01:01[32m ls[0m
+-rwx------ 1  achao008 csmajs  146502  Dec  5 00:18[32m rshell[0m
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100/rshell/bin$ cat  #takes over stdin
+test
+test
+test
+test
+achao008@hammer.cs.ucr.edu:/home/csmajs/achao008/Documents/CS100/rshell/bin$ exit
+Exiting rshell.
+[s%%%%%%%%%%[u[0;32machao008[0;36m@[0;32mcs100[0;36m:[0;32m~/Documents/CS100/rshell[0;95m (signal) [0;36m$[0m exit
+exit
+~
+achao008@hammer $ exit
+exit
+
+Script done on Fri 05 Dec 2014 08:02:40 PM PST
